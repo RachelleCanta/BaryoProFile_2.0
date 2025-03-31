@@ -1,0 +1,192 @@
+@port = 8080
+@baseUrl = http://localhost:{{port}}/api
+
+### * test retrieving all 
+GET {{baseUrl}}/residents
+
+### * test retrieving by its id
+GET {{baseUrl}}/residents/67e2a49d400e46938a3a8c67
+
+### * test register
+POST {{baseUrl}}/residents
+Content-Type: application/json
+
+{
+  "cluster": "ha",
+  "brgyHealthWorker": "haha",
+  "householdNo": "1232123",
+  "totalMembers": 12,
+  "houseLotBlockNo": "123",
+  "doorInput": "12 HJJAJ",
+  "fourPsIdNo": true,
+
+  "headFirstName": "HA",
+  "headMiddleName": "HA",
+  "headLastName": "HA",
+  "relationshipToHouseHoldHead": "Head",
+  "headAge": 12,
+  "headSex": "Male",
+  "headBirthday": "2025-03-25",
+  "headPlaceOfBirth": "HGA",
+  "headNationality": "Albanian",
+  "headMaritalStatus": "Single",
+  "headReligion": "Islam",
+  "headEthnicity": "Tagalog",
+  "headHighestLevelOfEducation": "Elementary",
+  "headSchoolLevel": "Elementary",
+  "headPlaceOfSchool": "POS",
+
+  "spouseFirstName": "HA",
+  "spouseMiddleName": "ha",
+  "spouseLastName": "ha",
+  "relationshipToHouseHoldHead": "Spouse",
+  "spouseAge": 12,
+  "spouseSex": "Male",
+  "spouseBirthday": "2025-03-25",
+  "spousePlaceOfBirth": "hgha",
+  "spouseNationality": "Albanian",
+  "spouseMaritalStatus": "Single",
+  "spouseReligion": "",
+  "spouseEthnicity": "Tagalog",
+  "spouseIsRegisteredVoter": true,
+  "spouseSchoolLevel": "Elementary",
+  "spousePlaceOfSchool": "Ha",
+
+  "familyMembers": [
+    {
+      "firstName": "John",
+      "middleName": "D",
+      "lastName": "Doe",
+      "relationship": "Child",
+      "age": 5,
+      "sex": "Male",
+      "birthday": "2020-06-15",
+      "placeOfBirth": "City A",
+      "nationality": "Filipino",
+      "maritalStatus": "Single",
+      "religion": "Christian",
+      "ethnicity": "Tagalog",
+      "isRegisteredVoter": false,
+      "schoolLevel": "Kindergarten",
+      "placeOfSchool": "Little Angels Academy"
+    }
+  ],
+
+  "additionalInfos": [
+    {
+      "name": "HA",
+      "pregnant": "No",
+      "pregnantMonths": 0,
+      "familyPlanning": "Yes",
+      "pwd": "N/A",
+      "soloParent": "No",
+      "seniorCitizen": "No",
+      "maintenance": "None",
+      "philhealth": "Active",
+      "houseLot": "Owned",
+      "waterSupply": "Municipal",
+      "comfortRoom": "Private",
+      "ofwCountry": "",
+      "yearsInService": 0,
+      "outOfSchool": "No",
+      "immigrantNationality": "",
+      "yearsOfStay": 0,
+      "residence": 1
+    }
+  ]
+}
+
+### * Test Update Resident
+PUT {{baseUrl}}/residents/67e2a49d400e46938a3a8c67
+Content-Type: application/json
+
+{
+  "cluster": "ha",
+  "brgyHealthWorker": "updated haha",
+  "householdNo": "1232123",
+  "totalMembers": 15,
+  "houseLotBlockNo": "456",
+  "doorInput": "34 ABC",
+  "fourPsIdNo": "5678",
+
+  "headFirstName": "Updated HA",
+  "headMiddleName": "Updated HA",
+  "headLastName": "Updated HA",
+  "relationshipToHouseHoldHead": "Head",
+  "headAge": 13,
+  "headSex": "Male",
+  "headBirthday": "2025-03-25",
+  "headPlaceOfBirth": "Updated HGA",
+  "headNationality": "Filipino",
+  "headMaritalStatus": "Married",
+  "headReligion": "Christian",
+  "headEthnicity": "Ilocano",
+  "headHighestLevelOfEducation": "High School",
+  "headSchoolLevel": "High School",
+  "headPlaceOfSchool": "Updated POS",
+
+  "spouseFirstName": "Updated HA",
+  "spouseMiddleName": "Updated ha",
+  "spouseLastName": "Updated ha",
+  "relationshipToHouseHoldHead": "Spouse",
+  "spouseAge": 14,
+  "spouseSex": "Female",
+  "spouseBirthday": "2025-03-26",
+  "spousePlaceOfBirth": "Updated hgha",
+  "spouseNationality": "Filipino",
+  "spouseMaritalStatus": "Married",
+  "spouseReligion": "Christian",
+  "spouseEthnicity": "Ilocano",
+  "spouseIsRegisteredVoter": true,
+  "spouseSchoolLevel": "High School",
+  "spousePlaceOfSchool": "Updated Ha",
+
+  "familyMembers": [
+    {
+      "firstName": "Jane",
+      "middleName": "D",
+      "lastName": "Doe",
+      "relationship": "Child",
+      "age": 7,
+      "sex": "Female",
+      "birthday": "2018-06-15",
+      "placeOfBirth": "Updated City A",
+      "nationality": "Filipino",
+      "maritalStatus": "Single",
+      "religion": "Christian",
+      "ethnicity": "Ilocano",
+      "isRegisteredVoter": false,
+      "schoolLevel": "Elementary",
+      "placeOfSchool": "Updated Little Angels Academy"
+    }
+  ],
+
+  "additionalInfos": [
+    {
+      "name": "Updated HA",
+      "pregnant": "No",
+      "pregnantMonths": 0,
+      "familyPlanning": "Yes",
+      "pwd": "None",
+      "soloParent": "No",
+      "seniorCitizen": "No",
+      "maintenance": "None",
+      "philhealth": "Inactive",
+      "houseLot": "Rented",
+      "waterSupply": "Deep Well",
+      "comfortRoom": "Shared",
+      "ofwCountry": "Japan",
+      "yearsInService": 2,
+      "outOfSchool": "No",
+      "immigrantNationality": "Japanese",
+      "yearsOfStay": 2,
+      "residence": 2
+    }
+  ]
+}
+
+### * test deletion by its id
+DELETE {{baseUrl}}/residents/67e2a49d400e46938a3a8c67
+
+### * for reports
+GET {{baseUrl}}/residents/statistics

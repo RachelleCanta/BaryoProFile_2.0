@@ -1,0 +1,374 @@
+/* Enhanced System Logs Styles */
+
+.system-logs-container {
+    padding: 2rem;
+    background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: auto;
+}
+
+/* Enhanced Header */
+.system-logs-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.system-logs-header h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-controls {
+    display: flex;
+    gap: 0.50rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-left: 20rem;
+}
+
+/* Enhanced Date Picker */
+.date-picker {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    outline: none;
+    font-size: 0.95rem;
+    color: #1e293b;
+    cursor: pointer;
+    min-width: 140px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.date-picker:hover {
+    border-color: #94a3b8;
+}
+
+.date-picker:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Enhanced Buttons */
+.export-btn, .clear-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.export-btn {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+}
+
+.export-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.clear-btn {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+}
+
+.clear-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
+}
+
+/* Enhanced Search and Filter Bar */
+.search-filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.search-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 200px;
+    flex-wrap: wrap;
+}
+
+.search-section span {
+    font-size: 0.95rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.search-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    flex: 1;
+    min-width: 200px;
+    outline: none;
+    font-size: 0.95rem;
+    color: #1e293b;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+
+.search-input:focus {
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Enhanced Dropdown */
+.activity-dropdown-container {
+    position: relative;
+    width: 220px;
+    min-width: 180px;
+}
+
+.activity-dropdown-button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    color: #1e293b;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.activity-dropdown-button:hover {
+    border-color: #94a3b8;
+}
+
+.activity-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
+}
+
+.activity-dropdown-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    color: #1e293b;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.activity-dropdown-item:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+    padding-left: 1.5rem;
+}
+
+/* Enhanced Table */
+.logs-table-container {
+    margin-top: 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    width: 100%;
+    background: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.logs-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 800px;
+}
+
+.logs-table th, 
+.logs-table td {
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.logs-table th {
+    background: #f8fafc;
+    font-weight: 600;
+    text-align: left;
+    color: #1e293b;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.logs-table td {
+    color: #475569;
+}
+
+/* Column specific styles */
+.logs-table th:nth-child(1),
+.logs-table td:nth-child(1) { /* Timestamp */
+    min-width: 180px;
+}
+
+.logs-table th:nth-child(2),
+.logs-table td:nth-child(2) { /* User */
+    min-width: 200px;
+}
+
+.logs-table th:nth-child(3),
+.logs-table td:nth-child(3) { /* Action */
+    min-width: 140px;
+}
+
+.logs-table th:nth-child(4),
+.logs-table td:nth-child(4) { /* Module */
+    min-width: 200px;
+}
+
+.logs-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.logs-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.logs-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status Indicators */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-success {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.status-warning {
+    background: #fef9c3;
+    color: #ca8a04;
+}
+
+.status-error {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Animation Keyframes */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced Responsive Design */
+@media screen and (max-width: 1024px) {
+    .system-logs-container {
+        padding: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .system-logs-container {
+        padding: 1rem;
+    }
+
+    .system-logs-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.25rem;
+    }
+
+    .header-controls {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .search-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1.25rem;
+    }
+
+    .search-section {
+        width: 100%;
+    }
+
+    .activity-dropdown-container {
+        width: 100%;
+    }
+
+    .search-input {
+        width: 100%;
+    }
+
+    .export-btn, 
+    .clear-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Enhanced Icons */
+.fa-chevron-down {
+    font-size: 0.875rem;
+    color: #64748b;
+    transition: transform 0.2s ease;
+}
+
+.activity-dropdown-button:hover .fa-chevron-down {
+    color: #2563eb;
+}
+
+.activity-dropdown-container.open .fa-chevron-down {
+    transform: rotate(180deg);
+}
