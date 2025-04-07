@@ -7,12 +7,15 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./styles/main.css";
 import { ResidentProvider } from "./contexts/residentContext.js";
 import { UserProvider } from "./contexts/userContext.js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <UserProvider>
       <ResidentProvider>
+        <ToastContainer />
         <App />
       </ResidentProvider>
     </UserProvider>

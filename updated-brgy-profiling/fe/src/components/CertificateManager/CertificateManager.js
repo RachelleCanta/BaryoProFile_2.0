@@ -5,6 +5,7 @@ import { checkPermission, handlePermissionError, PERMISSIONS } from '../Permissi
 import PermissionErrorModal from '../Permission/PermissionErrorModal';
 import './CertificateManager.css';
 import axiosInstance from '../../axios';
+import { toast } from "react-toastify";
 
 const CertificateManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -230,12 +231,12 @@ const CertificateManager = () => {
             const filename = templateUrl.split('/').pop();
             link.download = filename;
 
-            // Log the download activity with proper user format
-            logActivity(username, 'Download', 'Certificate Management', {
-                certificateName: certName,
-                templateFile: filename,
-                downloadedAt: new Date().toISOString()
-            });
+            // // Log the download activity with proper user format
+            // logActivity(username, 'Download', 'Certificate Management', {
+            //     certificateName: certName,
+            //     templateFile: filename,
+            //     downloadedAt: new Date().toISOString()
+            // });
 
             document.body.appendChild(link);
             link.click();
@@ -246,12 +247,16 @@ const CertificateManager = () => {
         // Make sure the userId is properly formatted before making the API request
         const userId = JSON.parse(localStorage.getItem('userId') || 'null');
         
-        await axiosInstance.post('/system-logs', {
-            action: "Download",
-            module: "Downloaded a template",
-            user: userId, // Ensures proper formatting (null if unavailable)
-            details: `User ${username} downloaded ${certName} (${urls.length > 1 ? 'multiple files' : urls[0].split('/').pop()})`,
+        await axiosInstance.post("/system-logs", {
+          action: "Download",
+          module: "Manage Certificate Templates",
+          user: userId, // Ensures proper formatting (null if unavailable)
+          details: `User ${username} downloaded ${certName} (${
+            urls.length > 1 ? "multiple files" : urls[0].split("/").pop()
+          })`,
         });
+
+        toast.success(`${certName} File downloaded successfully!`);
 
         setDownloadStatus({ loading: false, error: null });
     } catch (error) {

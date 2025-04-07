@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { logResidentActivity, ACTIONS } from "../../utils/auditLogger";
 import "./FamilyForm.css";
 import axios from "axios";
+import axiosInstance from "../../axios";
+import { UserContext } from "../../contexts/userContext.js";
+import { toast } from "react-toastify";
 
 function FamilyForm({ onBack }) {
+  const { currentUser, setCurrentUser } = useContext(UserContext);
   const yesNoOptions = ["", "Yes", "No"];
   const sexOptions = ["", "Male", "Female"];
   const maritalOptions = [
@@ -51,6 +55,7 @@ function FamilyForm({ onBack }) {
     "None",
   ];
   const nationalityOptions = [
+    "",
     "Afghan",
     "Albanian",
     "Algerian",
@@ -110,6 +115,7 @@ function FamilyForm({ onBack }) {
     "Estonian",
     "Ethiopian",
     "Fijian",
+    "Filipino",
     "Finnish",
     "French",
     "Gabonese",
@@ -244,6 +250,8 @@ function FamilyForm({ onBack }) {
     "Others",
   ];
   const religionOptions = [
+    "",
+    "Roman Catholic",
     "Christianity",
     "Islam",
     "Hinduism",
@@ -296,9 +304,13 @@ function FamilyForm({ onBack }) {
     "Other",
   ];
 
+  const [showFamilyMembers, setShowFamilyMembers] = useState(false);
+  const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
+
   // Regular expression for numeric validation
   const numericRegex = /^[0-9]*$/;
 
+  // * ORIG
   const [formData, setFormData] = useState({
     cluster: "",
     healthWorker: "",
@@ -338,48 +350,189 @@ function FamilyForm({ onBack }) {
     spouseSchoolLevel: "",
     spousePOS: "",
   });
-  const [familyMembers, setFamilyMembers] = useState([
-    {
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      relationship: "",
-      sex: "",
-      age: "",
-      birthday: "",
-      placeOfBirth: "",
-      nationality: "",
-      maritalStatus: "",
-      religion: "",
-      ethnicity: "",
-      voter: "",
-      schoolLevel: "",
-      schoolPlace: "",
-    },
-  ]);
+  const familyMember = {
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    relationship: "",
+    sex: "",
+    age: "",
+    birthday: "",
+    placeOfBirth: "",
+    nationality: "",
+    maritalStatus: "",
+    religion: "",
+    ethnicity: "",
+    voter: "",
+    schoolLevel: "",
+    schoolPlace: "",
+  };
 
-  const [additionalInfos, setAdditionalInfos] = useState([
-    {
-      name: "",
-      pregnant: "",
-      pregnantMonths: "",
-      familyPlanning: "",
-      pwd: "N/A",
-      soloParent: "",
-      seniorCitizen: "",
-      maintenance: "",
-      philhealth: "",
-      houseLot: "",
-      waterSupply: "",
-      comfortRoom: "",
-      ofwCountry: "",
-      ofwYears: "",
-      dropout: "",
-      immigrantNationality: "",
-      immigrantStay: "",
-      residence: "",
-    },
-  ]);
+  const additionalInfo = {
+    name: "",
+    pregnant: "",
+    pregnantMonths: 0,
+    familyPlanning: "",
+    pwd: "",
+    soloParent: "",
+    seniorCitizen: "",
+    maintenance: "",
+    philhealth: "",
+    houseLot: "",
+    waterSupply: "",
+    comfortRoom: "",
+    ofwCountry: "",
+    ofwYears: 0,
+    dropout: "",
+    immigrantNationality: "",
+    immigrantStay: 0,
+    residence: 0,
+  };
+
+  const [familyMembers, setFamilyMembers] = useState([]);
+
+  const [additionalInfos, setAdditionalInfos] = useState([]);
+
+  // ! FOR TESTING PURPOSED ONLY
+  // const [formData, setFormData] = useState({
+  //   cluster: "Cluster A",
+  //   healthWorker: "John Doe",
+  //   household: "Doe Family",
+  //   totalMembers: "5",
+  //   houseInput: "123 Main St",
+  //   doorInput: "4B",
+  //   fourPs: "N/A",
+  //   headFirstName: "Michael",
+  //   headMiddleName: "Smith",
+  //   headLastName: "Doe",
+  //   headRelationship: "Head",
+  //   headSex: "Male",
+  //   headAge: "45",
+  //   headBirthday: "1979-03-15",
+  //   headPlaceOfBirth: "Manila",
+  //   headNationality: "Filipino",
+  //   headMaritalStatus: "Married",
+  //   headReligion: "Christianity",
+  //   headEthnicity: "Tagalog",
+  //   headHLEC: "High School",
+  //   schoolLevel: "College",
+  //   POS: "Employed",
+  //   spouseFirstName: "Sarah",
+  //   spouseMiddleName: "Anne",
+  //   spouseLastName: "Doe",
+  //   spouseRelationship: "Spouse",
+  //   spouseSex: "Female",
+  //   spouseAge: "42",
+  //   spouseBirthday: "1982-06-20",
+  //   spousePlaceOfBirth: "Cebu",
+  //   spouseNationality: "Filipino",
+  //   spouseMaritalStatus: "Married",
+  //   spouseReligion: "Christianity",
+  //   spouseEthnicity: "Bisaya",
+  //   spouseVoter: "Registered",
+  //   spouseSchoolLevel: "College",
+  //   spousePOS: "Self-Employed",
+  // });
+
+  // ! FOR TESTING PURPOSED ONLY
+  // const familyMember = {
+  //   firstName: "Emily",
+  //   middleName: "Grace",
+  //   lastName: "Doe",
+  //   relationship: "Daughter",
+  //   sex: "Female",
+  //   age: "18",
+  //   birthday: "2006-01-10",
+  //   placeOfBirth: "Manila",
+  //   nationality: "Filipino",
+  //   maritalStatus: "Single",
+  //   religion: "Christianity",
+  //   ethnicity: "Tagalog",
+  //   voter: "Not Registered",
+  //   schoolLevel: "Senior High School",
+  //   schoolPlace: "Quezon City",
+  // };
+
+  // const additionalInfo = {
+  //   name: "Michael Doe",
+  //   pregnant: "No",
+  //   pregnantMonths: 0,
+  //   familyPlanning: "Pills",
+  //   pwd: "N/A",
+  //   soloParent: "No",
+  //   seniorCitizen: "N/A",
+  //   maintenance: "N/A",
+  //   philhealth: "N/A",
+  //   houseLot: "Owned",
+  //   waterSupply: "Own",
+  //   comfortRoom: "Owned",
+  //   ofwCountry: "N/A",
+  //   ofwYears: 0,
+  //   dropout: "No",
+  //   immigrantNationality: "Not an immigrant",
+  //   immigrantStay: "N/A",
+  //   residence: 0,
+  // };
+
+  // const [familyMembers, setFamilyMembers] = useState([
+  //   {
+  //     firstName: "Emily",
+  //     middleName: "Grace",
+  //     lastName: "Doe",
+  //     relationship: "Daughter",
+  //     sex: "Female",
+  //     age: "18",
+  //     birthday: "2006-01-10",
+  //     placeOfBirth: "Manila",
+  //     nationality: "Filipino",
+  //     maritalStatus: "Single",
+  //     religion: "Christianity",
+  //     ethnicity: "Tagalog",
+  //     voter: "Registered",
+  //     schoolLevel: "Senior High School",
+  //     schoolPlace: "Quezon City",
+  //   },
+  //   {
+  //     firstName: "Jacob",
+  //     middleName: "Andrew",
+  //     lastName: "Doe",
+  //     relationship: "Son",
+  //     sex: "Male",
+  //     age: "15",
+  //     birthday: "2009-07-05",
+  //     placeOfBirth: "Manila",
+  //     nationality: "Filipino",
+  //     maritalStatus: "Single",
+  //     religion: "Christianity",
+  //     ethnicity: "Tagalog",
+  //     voter: "Registered",
+  //     schoolLevel: "High School",
+  //     schoolPlace: "Quezon City",
+  //   },
+  // ]);
+
+  // const [additionalInfos, setAdditionalInfos] = useState([
+  //   {
+  //     name: "Michael Doe",
+  //     pregnant: "No",
+  //     pregnantMonths: 0,
+  //     familyPlanning: "Pills",
+  //     pwd: "No",
+  //     soloParent: "No",
+  //     seniorCitizen: "N/A",
+  //     maintenance: "None",
+  //     philhealth: "Yes",
+  //     houseLot: "Owned",
+  //     waterSupply: "Own",
+  //     comfortRoom: "Owned",
+  //     ofwCountry: "N/A",
+  //     ofwYears: 0,
+  //     dropout: "N/A",
+  //     immigrantNationality: "N/A",
+  //     immigrantStay: 0,
+  //     residence: 0,
+  //   },
+  // ]);
 
   // Handle numeric input validation for ID numbers
   const handleNumericInput = (event, setter, field, value) => {
@@ -387,6 +540,25 @@ function FamilyForm({ onBack }) {
     if (value === "" || numericRegex.test(value)) {
       setter(field, value);
     }
+  };
+
+  // To remove a family member
+  const removeFamilyMember = (index) => {
+    setFamilyMembers((prevData) => prevData.filter((_, i) => i !== index));
+  };
+
+  useEffect(() => {
+    if (familyMembers.length <= 0) {
+      setShowFamilyMembers(false);
+    }
+    if (additionalInfos.length <= 0) {
+      setShowAdditionalInfo(false);
+    }
+  }, [familyMembers, additionalInfos]);
+
+  // To remove an additional info
+  const removeAdditionalInfo = (index) => {
+    setAdditionalInfos((prevData) => prevData.filter((_, i) => i !== index));
   };
 
   // Validation function for the form before submission
@@ -406,7 +578,8 @@ function FamilyForm({ onBack }) {
         info.pregnant === "Yes" &&
         (!info.pregnantMonths ||
           info.pregnantMonths < 1 ||
-          info.pregnantMonths > 9)
+          info.pregnantMonths > 9 ||
+          info.pregnantMonths === "")
       ) {
         isValid = false;
         message = `Additional Info for ${
@@ -418,7 +591,7 @@ function FamilyForm({ onBack }) {
       if (
         info.pregnant === "Yes" &&
         info.familyPlanning &&
-        info.familyPlanning !== "None"
+        (info.familyPlanning !== "None" || info.familyPlanning !== "")
       ) {
         isValid = false;
         message = `Additional Info for ${
@@ -427,19 +600,19 @@ function FamilyForm({ onBack }) {
       }
 
       // Validate that ID fields contain only numbers
-      if (info.seniorCitizen && !numericRegex.test(info.seniorCitizen)) {
-        isValid = false;
-        message = `Additional Info for ${
-          info.name || `#${index + 1}`
-        }: Senior Citizen ID must contain only numbers.`;
-      }
+      // if (info.seniorCitizen && !numericRegex.test(info.seniorCitizen)) {
+      //   isValid = false;
+      //   message = `Additional Info for ${
+      //     info.name || `#${index + 1}`
+      //   }: Senior Citizen ID must contain only numbers.`;
+      // }
 
-      if (info.philhealth && !numericRegex.test(info.philhealth)) {
-        isValid = false;
-        message = `Additional Info for ${
-          info.name || `#${index + 1}`
-        }: PhilHealth ID must contain only numbers.`;
-      }
+      // if (info.philhealth && !numericRegex.test(info.philhealth)) {
+      //   isValid = false;
+      //   message = `Additional Info for ${
+      //     info.name || `#${index + 1}`
+      //   }: PhilHealth ID must contain only numbers.`;
+      // }
 
       // Ensure numeric years are valid
       if (
@@ -475,13 +648,17 @@ function FamilyForm({ onBack }) {
     });
 
     // Validate 4P's ID (if provided)
-    if (formData.fourPs && !numericRegex.test(formData.fourPs)) {
-      isValid = false;
-      message = "4P's ID Number must contain only numbers.";
-    }
+    // if (formData.fourPs && !numericRegex.test(formData.fourPs)) {
+    //   isValid = false;
+    //   message = "4P's ID Number must contain only numbers.";
+    // }
+
+    // if (!isValid) {
+    //   alert(message);
+    // }
 
     if (!isValid) {
-      alert(message);
+      toast.error(message);
     }
 
     return isValid;
@@ -502,23 +679,21 @@ function FamilyForm({ onBack }) {
     };
 
     // Log the creation activity
-    logResidentActivity(
-      "systemadmin", // Replace with actual user
-      ACTIONS.CREATE,
-      `Added new resident: ${formData.headFirstName} ${formData.headLastName}`,
-      {
-        module: "Resident Management",
-        cluster: formData.cluster,
-        household: formData.household,
-      }
-    );
+    // logResidentActivity(
+    //   "systemadmin", // Replace with actual user
+    //   ACTIONS.CREATE,
+    //   `Added new resident: ${formData.headFirstName} ${formData.headLastName}`,
+    //   {
+    //     module: "Resident Management",
+    //     cluster: formData.cluster,
+    //     household: formData.household,
+    //   }
+    // );
 
-    const existingData =
-      JSON.parse(localStorage.getItem("familyMembers")) || [];
-    const newData = [...existingData, completeData];
-    localStorage.setItem("familyMembers", JSON.stringify(newData));
-
-    clearForm();
+    // const existingData =
+    //   JSON.parse(localStorage.getItem("familyMembers")) || [];
+    // const newData = [...existingData, completeData];
+    // localStorage.setItem("familyMembers", JSON.stringify(newData));
 
     const data = {
       cluster: completeData.cluster,
@@ -548,7 +723,7 @@ function FamilyForm({ onBack }) {
       spouseFirstName: completeData.spouseFirstName,
       spouseMiddleName: completeData.spouseMiddleName,
       spouseLastName: completeData.spouseLastName,
-      relationshipToHouseHoldHead: completeData.spouseRelationship,
+      spouseRelationshipToHouseHoldHead: completeData.spouseRelationship,
       spouseAge: completeData.spouseAge,
       spouseSex: completeData.spouseSex,
       spouseBirthday: completeData.spouseBirthday,
@@ -602,7 +777,7 @@ function FamilyForm({ onBack }) {
       })),
     };
 
-    console.log(completeData.familyMembers[0].age);
+    // console.log(completeData.familyMembers[0].age);
 
     try {
       let url = "http://localhost:8080/api/residents";
@@ -610,10 +785,19 @@ function FamilyForm({ onBack }) {
       let response = await axios.post(url, data);
 
       if (response.data.success === true) {
-        alert("Information saved successfully");
+        toast.success("Information saved successfully");
+
+        await axiosInstance.post("/system-logs", {
+          action: ACTIONS.CREATE,
+          module: "Resident Management",
+          user: currentUser.id,
+          details: `User ${currentUser.username} Added new resident: ${formData.headFirstName} ${formData.headLastName}`,
+        });
       }
+
+      clearForm();
     } catch (error) {
-      alert(error.response.data.error);
+      toast.error(error.response.data.error);
       console.log(error.response.data);
     }
   };
@@ -630,69 +814,51 @@ function FamilyForm({ onBack }) {
       ...Object.fromEntries(Object.keys(formData).map((key) => [key, ""])),
     });
     setFamilyMembers([
-      {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        relationship: "",
-        sex: "",
-        age: "",
-        birthday: "",
-        placeOfBirth: "",
-        nationality: "",
-        maritalStatus: "",
-        religion: "",
-        ethnicity: "",
-        voter: "",
-        schoolLevel: "",
-        schoolPlace: "",
-      },
+      // {
+      //   firstName: "",
+      //   middleName: "",
+      //   lastName: "",
+      //   relationship: "",
+      //   sex: "",
+      //   age: "",
+      //   birthday: "",
+      //   placeOfBirth: "",
+      //   nationality: "",
+      //   maritalStatus: "",
+      //   religion: "",
+      //   ethnicity: "",
+      //   voter: "",
+      //   schoolLevel: "",
+      //   schoolPlace: "",
+      // },
     ]);
     setAdditionalInfos([
-      {
-        name: "",
-        pregnant: "",
-        pregnantMonths: "",
-        familyPlanning: "",
-        pwd: "N/A",
-        soloParent: "",
-        seniorCitizen: "",
-        maintenance: "",
-        philhealth: "",
-        houseLot: "",
-        waterSupply: "",
-        comfortRoom: "",
-        ofwCountry: "",
-        ofwYears: "",
-        dropout: "",
-        immigrantNationality: "",
-        immigrantStay: "",
-        residence: "",
-      },
+      // {
+      //   name: "",
+      //   pregnant: "",
+      //   pregnantMonths: "",
+      //   familyPlanning: "",
+      //   pwd: "N/A",
+      //   soloParent: "",
+      //   seniorCitizen: "",
+      //   maintenance: "",
+      //   philhealth: "",
+      //   houseLot: "",
+      //   waterSupply: "",
+      //   comfortRoom: "",
+      //   ofwCountry: "",
+      //   ofwYears: "",
+      //   dropout: "",
+      //   immigrantNationality: "",
+      //   immigrantStay: "",
+      //   residence: "",
+      // },
     ]);
   };
 
   const addFamilyMember = () => {
-    setFamilyMembers([
-      ...familyMembers,
-      {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        relationship: "",
-        sex: "",
-        age: "",
-        birthday: "",
-        placeOfBirth: "",
-        nationality: "",
-        maritalStatus: "",
-        religion: "",
-        ethnicity: "",
-        voter: "",
-        schoolLevel: "",
-        schoolPlace: "",
-      },
-    ]);
+    setShowFamilyMembers(true);
+    setFamilyMembers([...familyMembers, familyMember]);
   };
 
   const handleFamilyMemberChange = (index, field, value) => {
@@ -708,29 +874,8 @@ function FamilyForm({ onBack }) {
   };
 
   const addAdditionalInfo = () => {
-    setAdditionalInfos([
-      ...additionalInfos,
-      {
-        name: "",
-        pregnant: "",
-        pregnantMonths: "",
-        familyPlanning: "",
-        pwd: "N/A",
-        soloParent: "",
-        seniorCitizen: "",
-        maintenance: "",
-        philhealth: "",
-        houseLot: "",
-        waterSupply: "",
-        comfortRoom: "",
-        ofwCountry: "",
-        ofwYears: "",
-        dropout: "",
-        immigrantNationality: "",
-        immigrantStay: "",
-        residence: "",
-      },
-    ]);
+    setShowAdditionalInfo(true);
+    setAdditionalInfos([...additionalInfos, additionalInfo]);
   };
 
   const handleAdditionalInfoChange = (index, field, value) => {
@@ -756,11 +901,11 @@ function FamilyForm({ onBack }) {
     }
 
     // Apply numeric validation for specific fields
-    if (["seniorCitizen", "philhealth"].includes(field)) {
-      if (value !== "" && !numericRegex.test(value)) {
-        return; // Don't update if not numeric
-      }
-    }
+    // if (["seniorCitizen", "philhealth"].includes(field)) {
+    //   if (value !== "" && !numericRegex.test(value)) {
+    //     return; // Don't update if not numeric
+    //   }
+    // }
 
     // Apply numeric validation for year fields
     if (["ofwYears", "immigrantStay", "residence"].includes(field)) {
@@ -778,7 +923,7 @@ function FamilyForm({ onBack }) {
   // Handle formData changes with numeric validation for specific fields
   const handleFormDataChange = (field, value) => {
     // Check for numeric fields
-    if (["totalMembers", "headAge", "spouseAge", "fourPs"].includes(field)) {
+    if (["totalMembers", "headAge", "spouseAge"].includes(field)) {
       if (value !== "" && !numericRegex.test(value)) {
         return; // Don't update if not numeric
       }
@@ -788,7 +933,7 @@ function FamilyForm({ onBack }) {
   };
 
   return (
-    <div className="family-member-container" style={{ padding: 10}}>
+    <div className="family-member-container" style={{ padding: 10 }}>
       <div className="logo-part">
         <div className="logo-spacer"></div>
         <div className="darasa">
@@ -897,8 +1042,8 @@ function FamilyForm({ onBack }) {
                 <label>4P's ID NO.:</label>
                 <input
                   type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
+                  // inputMode="numeric"
+                  // pattern="[0-9]*"
                   value={formData.fourPs}
                   onChange={(e) =>
                     handleFormDataChange("fourPs", e.target.value)
@@ -1387,280 +1532,301 @@ function FamilyForm({ onBack }) {
           <div className="section-title">
             FAMILY MEMBERS (Including 0 mos old to Senior)
           </div>
-          <table className="responsive-table">
-            <thead>
-              <tr>
-                <th>FIRST NAME</th>
-                <th>MIDDLE NAME</th>
-                <th>LAST NAME</th>
-                <th>RELATIONSHIP</th>
-                <th>SEX</th>
-                <th>AGE</th>
-                <th>BIRTHDAY</th>
-                <th>PLACE OF BIRTH</th>
-                <th>NATIONALITY</th>
-                <th>MARITAL STATUS</th>
-                <th>RELIGION</th>
-                <th>ETHNICITY</th>
-                <th>REGISTERED VOTER</th>
-                <th className="education-col">
-                  SCHOOL LEVEL
-                  <br />
-                  <span className="note-text">(For ages 3-24 only)</span>
-                </th>
-                <th className="education-col">
-                  PLACE OF SCHOOL
-                  <br />
-                  <span className="note-text">(For ages 3-24 only)</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {familyMembers.map((member, index) => (
-                <tr key={index}>
-                  <td>
-                    <input
-                      type="text"
-                      value={member.firstName}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "firstName",
-                          e.target.value
-                        )
-                      }
-                      required
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={member.middleName}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "middleName",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={member.lastName}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "lastName",
-                          e.target.value
-                        )
-                      }
-                      required
-                    />
-                  </td>
-                  <td>
-                    <select
-                      value={member.relationship}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "relationship",
-                          e.target.value
-                        )
-                      }
-                      required
-                    >
-                      {relationshipOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      value={member.sex}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(index, "sex", e.target.value)
-                      }
-                      required
-                    >
-                      {sexOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={member.age}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(index, "age", e.target.value)
-                      }
-                      required
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="date"
-                      value={member.birthday}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "birthday",
-                          e.target.value
-                        )
-                      }
-                      required
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={member.placeOfBirth}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "placeOfBirth",
-                          e.target.value
-                        )
-                      }
-                      required
-                    />
-                  </td>
-                  <td>
-                    <select
-                      value={member.nationality}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "nationality",
-                          e.target.value
-                        )
-                      }
-                      required
-                    >
-                      {nationalityOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      value={member.maritalStatus}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "maritalStatus",
-                          e.target.value
-                        )
-                      }
-                      required
-                    >
-                      {maritalOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      value={member.religion}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "religion",
-                          e.target.value
-                        )
-                      }
-                      required
-                    >
-                      {religionOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      value={member.ethnicity}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "ethnicity",
-                          e.target.value
-                        )
-                      }
-                      required
-                    >
-                      {ethnicityOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      value={member.voter}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(index, "voter", e.target.value)
-                      }
-                      required
-                    >
-                      {voterOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      value={member.schoolLevel}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "schoolLevel",
-                          e.target.value
-                        )
-                      }
-                      disabled={member.age < 3 || member.age > 24}
-                    >
-                      {educationLevels.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={member.schoolPlace}
-                      onChange={(e) =>
-                        handleFamilyMemberChange(
-                          index,
-                          "schoolPlace",
-                          e.target.value
-                        )
-                      }
-                      disabled={member.age < 3 || member.age > 24}
-                    />
-                  </td>
+          {showFamilyMembers ? (
+            <table className="responsive-table">
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>FIRST NAME</th>
+                  <th>MIDDLE NAME</th>
+                  <th>LAST NAME</th>
+                  <th>RELATIONSHIP</th>
+                  <th>SEX</th>
+                  <th>AGE</th>
+                  <th>BIRTHDAY</th>
+                  <th>PLACE OF BIRTH</th>
+                  <th>NATIONALITY</th>
+                  <th>MARITAL STATUS</th>
+                  <th>RELIGION</th>
+                  <th>ETHNICITY</th>
+                  <th>REGISTERED VOTER</th>
+                  <th className="education-col">
+                    SCHOOL LEVEL
+                    <br />
+                    <span className="note-text">(For ages 3-24 only)</span>
+                  </th>
+                  <th className="education-col">
+                    PLACE OF SCHOOL
+                    <br />
+                    <span className="note-text">(For ages 3-24 only)</span>
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {familyMembers.map((member, index) => (
+                  <tr key={index}>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => removeFamilyMember(index)}
+                        className="remove-info-btn"
+                      >
+                        Remove Row
+                      </button>
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={member.firstName}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "firstName",
+                            e.target.value
+                          )
+                        }
+                        required
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={member.middleName}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "middleName",
+                            e.target.value
+                          )
+                        }
+                        required
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={member.lastName}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "lastName",
+                            e.target.value
+                          )
+                        }
+                        required
+                      />
+                    </td>
+                    <td>
+                      <select
+                        value={member.relationship}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "relationship",
+                            e.target.value
+                          )
+                        }
+                        required
+                      >
+                        {relationshipOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={member.sex}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(index, "sex", e.target.value)
+                        }
+                        required
+                      >
+                        {sexOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={member.age}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(index, "age", e.target.value)
+                        }
+                        required
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="date"
+                        value={member.birthday}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "birthday",
+                            e.target.value
+                          )
+                        }
+                        required
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={member.placeOfBirth}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "placeOfBirth",
+                            e.target.value
+                          )
+                        }
+                        required
+                      />
+                    </td>
+                    <td>
+                      <select
+                        value={member.nationality}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "nationality",
+                            e.target.value
+                          )
+                        }
+                        required
+                      >
+                        {nationalityOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={member.maritalStatus}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "maritalStatus",
+                            e.target.value
+                          )
+                        }
+                        required
+                      >
+                        {maritalOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={member.religion}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "religion",
+                            e.target.value
+                          )
+                        }
+                        required
+                      >
+                        {religionOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={member.ethnicity}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "ethnicity",
+                            e.target.value
+                          )
+                        }
+                        required
+                      >
+                        {ethnicityOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={member.voter}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "voter",
+                            e.target.value
+                          )
+                        }
+                        required
+                      >
+                        {voterOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={member.schoolLevel}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "schoolLevel",
+                            e.target.value
+                          )
+                        }
+                        required
+                        disabled={member.age < 3 || member.age > 24}
+                      >
+                        {educationLevels.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={member.schoolPlace}
+                        onChange={(e) =>
+                          handleFamilyMemberChange(
+                            index,
+                            "schoolPlace",
+                            e.target.value
+                          )
+                        }
+                        required
+                        disabled={member.age < 3 || member.age > 24}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            ""
+          )}
           <div className="addDetails">
             <button
               type="button"
@@ -1679,366 +1845,397 @@ function FamilyForm({ onBack }) {
             Note: Pregnant field is for women 10 years old and above only.
             Family Planning can only be selected if Pregnant is "No".
           </div>
-          <div className="table-responsive">
-            <table className="responsive-table">
-              <thead>
-                <tr>
-                  <th>NAME</th>
-                  <th>PREGNANT</th>
-                  <th>FAMILY PLANNING</th>
-                  <th>
-                    PWD
-                    <br />
-                    <span className="note-text">
-                      (Specify disability or N/A)
-                    </span>
-                  </th>
-                  <th>SOLO PARENT</th>
-                  <th>
-                    SENIOR CITIZEN
-                    <br />
-                    <span className="note-text">(ID Number)</span>
-                  </th>
-                  <th>
-                    MAINTENANCE
-                    <br />
-                    <span className="note-text">(Medicine/Diagnosis)</span>
-                  </th>
-                  <th>
-                    PHILHEALTH
-                    <br />
-                    <span className="note-text">(ID Number)</span>
-                  </th>
-                  <th>HOUSE & LOT</th>
-                  <th>WATER SUPPLY</th>
-                  <th>COMFORT ROOM</th>
-                  <th className="ofw-col">
-                    OFW COUNTRY
-                    <br />
-                    <span className="note-text">(If applicable)</span>
-                  </th>
-                  <th className="ofw-col">YEARS IN SERVICE</th>
-                  <th>
-                    OUT OF SCHOOL
-                    <br />
-                    <span className="note-text">(Grade/Level stopped)</span>
-                  </th>
-                  <th className="immigrant-col">IMMIGRANT NATIONALITY</th>
-                  <th className="immigrant-col">YEARS OF STAY</th>
-                  <th>
-                    RESIDENCE YEARS
-                    <br />
-                    <span className="note-text">(In Darasa)</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {additionalInfos.map((info, index) => (
-                  <tr key={index}>
-                    <td>
-                      <input
-                        type="text"
-                        value={info.name}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "name",
-                            e.target.value
-                          )
-                        }
-                        required
-                      />
-                    </td>
-                    <td className="pregnant-cell">
-                      <select
-                        value={info.pregnant}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "pregnant",
-                            e.target.value
-                          )
-                        }
-                      >
-                        {yesNoOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                      {info.pregnant === "Yes" && (
+          {showAdditionalInfo ? (
+            <div className="table-responsive">
+              <table className="responsive-table">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>NAME</th>
+                    <th>PREGNANT</th>
+                    <th>FAMILY PLANNING</th>
+                    <th>
+                      PWD
+                      <br />
+                      <span className="note-text">
+                        (Specify disability or N/A)
+                      </span>
+                    </th>
+                    <th>SOLO PARENT</th>
+                    <th>
+                      SENIOR CITIZEN
+                      <br />
+                      <span className="note-text">(ID Number)</span>
+                    </th>
+                    <th>
+                      MAINTENANCE
+                      <br />
+                      <span className="note-text">(Medicine/Diagnosis)</span>
+                    </th>
+                    <th>
+                      PHILHEALTH
+                      <br />
+                      <span className="note-text">(ID Number)</span>
+                    </th>
+                    <th>HOUSE & LOT</th>
+                    <th>WATER SUPPLY</th>
+                    <th>COMFORT ROOM</th>
+                    <th className="ofw-col">
+                      OFW COUNTRY
+                      <br />
+                      <span className="note-text">(If applicable)</span>
+                    </th>
+                    <th className="ofw-col">YEARS IN SERVICE</th>
+                    <th>
+                      OUT OF SCHOOL
+                      <br />
+                      <span className="note-text">(Grade/Level stopped)</span>
+                    </th>
+                    <th className="immigrant-col">IMMIGRANT NATIONALITY</th>
+                    <th className="immigrant-col">YEARS OF STAY</th>
+                    <th>
+                      RESIDENCE YEARS
+                      <br />
+                      <span className="note-text">(In Darasa)</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {additionalInfos.map((info, index) => (
+                    <tr key={index}>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => removeAdditionalInfo(index)}
+                          className="remove-info-btn"
+                        >
+                          Remove Row
+                        </button>
+                      </td>
+                      <td>
                         <input
                           type="text"
-                          inputMode="numeric"
-                          pattern="[1-9]"
-                          min="1"
-                          max="9"
-                          placeholder="Months"
-                          value={info.pregnantMonths || ""}
+                          value={info.name}
                           onChange={(e) =>
                             handleAdditionalInfoChange(
                               index,
-                              "pregnantMonths",
+                              "name",
                               e.target.value
                             )
                           }
-                          className="months-input"
+                          required
                         />
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        value={info.familyPlanning}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "familyPlanning",
-                            e.target.value
-                          )
-                        }
-                        disabled={info.pregnant === "Yes"}
-                      >
-                        {familyPlanningOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        placeholder="Specify or N/A"
-                        value={info.pwd}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "pwd",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <select
-                        value={info.soloParent}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "soloParent",
-                            e.target.value
-                          )
-                        }
-                      >
-                        {yesNoOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="ID Number"
-                        value={info.seniorCitizen}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "seniorCitizen",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        placeholder="Medicine/Diagnosis"
-                        value={info.maintenance}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "maintenance",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="ID Number"
-                        value={info.philhealth}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "philhealth",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <select
-                        value={info.houseLot}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "houseLot",
-                            e.target.value
-                          )
-                        }
-                      >
-                        {houseLotOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        value={info.waterSupply}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "waterSupply",
-                            e.target.value
-                          )
-                        }
-                      >
-                        {waterOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        value={info.comfortRoom}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "comfortRoom",
-                            e.target.value
-                          )
-                        }
-                      >
-                        {comfortRoomOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        placeholder="Country name"
-                        value={info.ofwCountry}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "ofwCountry",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="Years"
-                        value={info.ofwYears}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "ofwYears",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        placeholder="Grade/Level stopped"
-                        value={info.dropout}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "dropout",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <select
-                        value={info.immigrantNationality}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "immigrantNationality",
-                            e.target.value
-                          )
-                        }
-                      >
-                        <option value="">Not an immigrant</option>
-                        {nationalityOptions.map((option) =>
-                          option ? (
+                      </td>
+                      <td className="pregnant-cell">
+                        <select
+                          value={info.pregnant}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "pregnant",
+                              e.target.value
+                            )
+                          }
+                          required
+                        >
+                          {yesNoOptions.map((option) => (
                             <option key={option} value={option}>
                               {option}
                             </option>
-                          ) : null
+                          ))}
+                        </select>
+                        {info.pregnant === "Yes" && (
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[1-9]"
+                            min="1"
+                            max="9"
+                            placeholder="Months"
+                            value={info.pregnantMonths || ""}
+                            onChange={(e) =>
+                              handleAdditionalInfoChange(
+                                index,
+                                "pregnantMonths",
+                                e.target.value
+                              )
+                            }
+                            className="months-input"
+                          />
                         )}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="Years"
-                        value={info.immigrantStay}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "immigrantStay",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="Years in Darasa"
-                        value={info.residence}
-                        onChange={(e) =>
-                          handleAdditionalInfoChange(
-                            index,
-                            "residence",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      </td>
+                      <td>
+                        <select
+                          value={info.familyPlanning}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "familyPlanning",
+                              e.target.value
+                            )
+                          }
+                          disabled={info.pregnant === "Yes"}
+                        >
+                          {familyPlanningOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          placeholder="Specify or N/A"
+                          value={info.pwd}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "pwd",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </td>
+                      <td>
+                        <select
+                          value={info.soloParent}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "soloParent",
+                              e.target.value
+                            )
+                          }
+                          required
+                        >
+                          {yesNoOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          // inputMode="numeric"
+                          // pattern="[0-9]*"
+                          placeholder="ID Number"
+                          value={info.seniorCitizen}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "seniorCitizen",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          placeholder="Medicine/Diagnosis"
+                          value={info.maintenance}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "maintenance",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          // inputMode="numeric"
+                          // pattern="[0-9]*"
+                          placeholder="ID Number"
+                          value={info.philhealth}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "philhealth",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </td>
+                      <td>
+                        <select
+                          value={info.houseLot}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "houseLot",
+                              e.target.value
+                            )
+                          }
+                          required
+                        >
+                          {houseLotOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <select
+                          value={info.waterSupply}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "waterSupply",
+                              e.target.value
+                            )
+                          }
+                          required
+                        >
+                          {waterOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <select
+                          value={info.comfortRoom}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "comfortRoom",
+                              e.target.value
+                            )
+                          }
+                          required
+                        >
+                          {comfortRoomOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          placeholder="Country name"
+                          value={info.ofwCountry}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "ofwCountry",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          placeholder="Years"
+                          value={info.ofwYears}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "ofwYears",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          placeholder="Grade/Level stopped"
+                          value={info.dropout}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "dropout",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </td>
+                      <td>
+                        <select
+                          value={info.immigrantNationality}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "immigrantNationality",
+                              e.target.value
+                            )
+                          }
+                          required
+                        >
+                          <option value="Not an immigrant">
+                            Not an immigrant
+                          </option>
+                          {nationalityOptions.map((option) =>
+                            option ? (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ) : null
+                          )}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          placeholder="Years"
+                          value={info.immigrantStay}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "immigrantStay",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          placeholder="Years in Darasa"
+                          value={info.residence}
+                          onChange={(e) =>
+                            handleAdditionalInfoChange(
+                              index,
+                              "residence",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            ""
+          )}
           <div className="addDetails">
             <button type="button" onClick={addAdditionalInfo}>
               Add Additional Info

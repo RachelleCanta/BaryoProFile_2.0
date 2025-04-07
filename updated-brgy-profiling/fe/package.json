@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
+    "react-toastify": "^11.0.5",
     "recharts": "^2.15.0",
     "shadcn-ui": "^0.9.4",
     "tailwind-merge": "^2.6.0",

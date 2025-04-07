@@ -28,14 +28,14 @@ const ResidentSchema = new mongoose.Schema(
     headReligion: { type: String, required: true },
     headEthnicity: { type: String, required: true },
     headHighestLevelOfEducation: { type: String, required: true },
-    headSchoolLevel: { type: String, required: true },
-    headPlaceOfSchool: { type: String, required: true },
+    headSchoolLevel: { type: String },
+    headPlaceOfSchool: { type: String },
 
     // Spouse Information
     spouseFirstName: { type: String },
     spouseMiddleName: { type: String },
     spouseLastName: { type: String },
-    relationshipToHouseHoldHead: { type: String, required: true },
+    spouseRelationshipToHouseHoldHead: { type: String },
     spouseAge: { type: Number },
     spouseSex: { type: String, enum: ["Male", "Female", "Other"] },
     spouseBirthday: { type: Date },
@@ -51,24 +51,24 @@ const ResidentSchema = new mongoose.Schema(
     // Family Members (Array of Objects)
     familyMembers: [
       {
-        firstName: { type: String, required: true },
+        firstName: { type: String },
         middleName: { type: String },
-        lastName: { type: String, required: true },
-        relationship: { type: String, required: true },
-        age: { type: Number, required: true },
+        lastName: { type: String },
+        relationship: { type: String },
+        age: { type: Number },
         sex: {
           type: String,
           enum: ["Male", "Female", "Other"],
           required: true,
         },
-        birthday: { type: Date, required: true },
-        placeOfBirth: { type: String, required: true },
-        nationality: { type: String, required: true },
-        maritalStatus: { type: String, required: true },
-        religion: { type: String, required: true },
-        ethnicity: { type: String, required: true },
+        birthday: { type: Date },
+        placeOfBirth: { type: String },
+        nationality: { type: String },
+        maritalStatus: { type: String },
+        religion: { type: String },
+        ethnicity: { type: String },
         isRegisteredVoter: { type: Boolean },
-        schoolLevel: { type: String, required: true },
+        schoolLevel: { type: String },
         placeOfSchool: { type: String },
       },
     ],
@@ -76,7 +76,7 @@ const ResidentSchema = new mongoose.Schema(
     // Additional Information
     additionalInfos: [
       {
-        name: { type: String, required: true },
+        name: { type: String },
         pregnant: { type: String, default: "" },
         pregnantMonths: { type: Number, default: 0 },
         familyPlanning: { type: String, default: "" },

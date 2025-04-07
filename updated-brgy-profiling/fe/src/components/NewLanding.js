@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ArrowRight } from "lucide-react";
-// import "../styles/landing.css";
+import "../styles/newLanding.css";
 import { initializeUsers } from "../utils/userManager";
 import axios from "axios";
 import axiosInstance from "../axios";
-import { UserContext } from "../contexts/userContext.js"
+import { UserContext } from "../contexts/userContext.js";
 import { toast } from "react-toastify";
 
-function Landing({ onLogin }) {
+function NewLanding({ onLogin }) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -27,18 +27,6 @@ function Landing({ onLogin }) {
       [e.target.name]: e.target.value,
     });
   };
-
-  // const addToSystemLogs = (username, action, module) => {
-  //   const log = {
-  //     timestamp: new Date().toISOString(),
-  //     user: username,
-  //     action: action,
-  //     module: module,
-  //   };
-  //   const existingLogs = JSON.parse(localStorage.getItem("systemLogs") || "[]");
-  //   existingLogs.unshift(log);
-  //   localStorage.setItem("systemLogs", JSON.stringify(existingLogs));
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,21 +49,37 @@ function Landing({ onLogin }) {
         });
 
         if (response.data.success === true) {
-          toast.success("Registration successful! Wait for admin's approval to login");
+          toast.success(
+            "Registration successful! Wait for admin's approval to login"
+          );
 
-          formData.username = "";
-          formData.email = "";
-          formData.password = "";
-          formData.confirmPassword = "";
-          alert();
+          await axiosInstance.post("/system-logs", {
+            action: "Create",
+            module: "User Management",
+            user: response.data.user.id, // Ensures proper formatting
+            details: `User ${formData.username} was registered and is pending admin's approval`,
+          });
+
+          setFormData({
+            username: "",
+            password: "",
+            email: "",
+            confirmPassword: "",
+          });
+
+          alert("S");
         }
       } catch (error) {
         toast.error(error.response.data.message);
         console.log(error.response.data.message);
-        formData.username = "";
-        formData.email = "";
-        formData.password = "";
-        formData.confirmPassword = "";
+        setFormData({
+          username: "",
+          password: "",
+          email: "",
+          confirmPassword: "",
+        });
+
+        alert("E");
       }
     } else {
       // Login logic remains the same
@@ -128,14 +132,22 @@ function Landing({ onLogin }) {
       {/* Left side - Blue column with logo and content */}
       <div className="left-side">
         <div className="left-content">
-          <div className="logo-area">
+          <img
+            src="/images/system-logo.png"
+            alt="System Logo"
+            className="system-logo"
+          />
+          <div className="content-text">
+            <p>"Streamlining Barangay Records for Efficient Data Management"</p>
+            {/* <p></p> */}
+          </div>
+          {/* <div className="logo-area">
             <img
               src="/images/system-logo.png"
               alt="System Logo"
               className="system-logo"
             />
           </div>
-
           <div className="content-text">
             <h1>Barangay Darasa Profiling System</h1>
             <p>
@@ -143,7 +155,7 @@ function Landing({ onLogin }) {
               community service. Experience seamless data management and
               improved service delivery.
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -289,4 +301,4 @@ function Landing({ onLogin }) {
   );
 }
 
-export default Landing;
+export default NewLanding;

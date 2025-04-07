@@ -21,7 +21,7 @@ export const checkPermission = (user, permission) => {
 
   // For editor role - check permissions
   if (user.role === "staff") {
-    // If they have MANAGE permission, they can also VIEW
+      // If they have MANAGE permission, they can also VIEW
     if (user.permissions.includes(PERMISSIONS.MANAGE)) {
       if (
         permission === PERMISSIONS.MANAGE ||
@@ -31,8 +31,25 @@ export const checkPermission = (user, permission) => {
       ) {
         return true;
       }
-    } 
-    
+    } else if (user.permissions.includes(PERMISSIONS.ADD)) {
+      if (permission === PERMISSIONS.ADD || permission === "Add Records") {
+        return true;
+      }
+    } else if (user.permissions.includes(PERMISSIONS.REPORTS)) {
+      if (
+        permission === PERMISSIONS.REPORTS ||
+        permission === "View Reports & Analytics"
+      ) {
+        return true;
+      }
+    } else if (user.permissions.includes(PERMISSIONS.CERTIFICATES)) {
+      if (
+        permission === PERMISSIONS.CERTIFICATES ||
+        permission === "Manage Certificates"
+      ) {
+        return true;
+      }
+    }
     // Check for specific permissions
     return user.permissions.includes(permission);
   }

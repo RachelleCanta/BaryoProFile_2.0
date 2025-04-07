@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const auditLogSchema = new mongoose.Schema({
   action: {
     type: String,
-    enum: ["Create", "Edit", "Delete", "View", "Login", "Logout", "Download", "LOGIN_FAILED"], // Add more as needed
+    enum: ["View", "Create", "Edit", "Delete", "View", "Login", "Logout", "Download", "LOGIN_FAILED"], // Add more as needed
     required: true,
   },
   module: {

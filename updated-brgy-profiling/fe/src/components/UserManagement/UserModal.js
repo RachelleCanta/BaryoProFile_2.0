@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext } from "react";
 import "../../styles/UserModal.css";
 import { PERMISSIONS } from "../Permission/Permissions";
 import { UserContext } from "../../contexts/userContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const UserModal = ({
   showModal,
@@ -17,9 +19,43 @@ const UserModal = ({
     password: "",
     role: "",
     permissions: [],
+    linkedResident: "",
   });
 
   const { currentUser } = useContext(UserContext);
+
+  const [residents, setResidents] = useState([]);
+
+  const fetchResidents = async () => {
+    try {
+      let response = await axios.get(`http://localhost:8080/api/residents`);
+
+      let fetchedResidents = response.data.data;
+      console.log(fetchedResidents);
+
+      // * normalize the data
+      const normalizedResidents = fetchedResidents.map((resident) => {
+        if (resident.additionalInfo && !resident.additionalInfos) {
+          resident.additionalInfos = resident.additionalInfo;
+          delete resident.additionalInfo;
+        }
+
+        if (!resident.additionalInfos) {
+          resident.additionalInfos = [];
+        }
+
+        return resident;
+      });
+
+      setResidents(normalizedResidents);
+    } catch (error) {
+      console.error("Error fetching residents:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchResidents();
+  }, []);
 
   useEffect(() => {
     if (editingUser) {
@@ -29,6 +65,7 @@ const UserModal = ({
         password: "",
         role: editingUser.role || "",
         permissions: editingUser.permissions || [], // Make sure this is set correctly
+        linkedResident: editingUser.linkedResident, // Make sure this is set correctly
       });
     } else {
       setFormData({
@@ -38,6 +75,7 @@ const UserModal = ({
         role: "",
         editorType: [],
         permissions: [],
+        linkedResident: "",
       });
     }
   }, [editingUser, showModal]);
@@ -84,7 +122,7 @@ const UserModal = ({
       } else if (formData.role === "staff") {
         // For editors, ensure at least one permission is selected
         if (formData.permissions.length === 0) {
-          alert("Please select at least one permission for Editor role");
+          toast.warning("Please select at least one permission for Editor role");
           return;
         } else {
           // Map each selected permission to a corresponding editor type
@@ -229,6 +267,32 @@ const UserModal = ({
             </div>
           ) : (
             ""
+          )}
+
+          {formData.role === "user" && (
+            <div className="form-group">
+              <label>Linked Resident to User</label>
+              <select
+                name="linkedResident"
+                value={formData.linkedResident}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">
+                  Resident Head and Household No. linked On This User
+                </option>
+                {residents.map((resident, key) => (
+                  <option
+                    value={resident._id}
+                    key={key}
+                    selected={resident._id === formData.linkedResident}
+                  >
+                    {resident.headFirstName} {resident.headMiddleName}{" "}
+                    {resident.headLastName} ({resident._id})
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
 
           {renderPermissionsSection()}

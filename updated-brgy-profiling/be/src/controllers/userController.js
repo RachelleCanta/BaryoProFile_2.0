@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { User } from "../models/userModel.js";
+import { AuditLog } from "../models/systemLogModel.js";
 
 // * Register User
 const registerUser = async (req, res) => {
@@ -20,6 +21,7 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
       role,
       editorType,
+      linkedResident: req.body.linkedResident,
     });
     await user.save();
 
@@ -71,6 +73,7 @@ const loginUser = async (req, res) => {
         editorType: user.editorType,
         permissions: user.permissions,
         status: user.status,
+        linkedResident: user.linkedResident,
       },
     });
   } catch (error) {
@@ -142,6 +145,10 @@ const updateUser = async (req, res) => {
     user.role = role || user.role;
     user.editorType = editorType || user.editorType;
 
+    if (req.body.linkedResident) {
+      user.linkedResident = req.body.linkedResident;
+    }
+
     if (status) {
       user.status = status;
     }
@@ -208,13 +215,28 @@ const updateUserStatus = async (req, res) => {
 // * Delete User
 const deleteUser = async (req, res) => {
   try {
+    // Step 1: Delete the user by ID
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user)
+    if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
+    }
 
-    res.json({ success: true, message: "User deleted successfully" });
+    // Step 2: Delete any documents in other collections that reference this user's ID
+    const deletedLinkedData = await AuditLog.deleteMany({
+      user: req.params.id, // Match documents where linkedUser matches the user's ID
+    });
+
+    // Optionally handle the case where no linked data was deleted
+    if (deletedLinkedData.deletedCount === 0) {
+      console.log("No linked data found to delete.");
+    }
+
+    res.json({
+      success: true,
+      message: "User and linked data deleted successfully",
+    });
   } catch (error) {
     res
       .status(500)

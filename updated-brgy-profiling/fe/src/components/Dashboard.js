@@ -11,6 +11,9 @@ import { checkPermission, PERMISSIONS } from "./Permission/Permissions";
 import PermissionErrorModal from "./Permission/PermissionErrorModal";
 import "../styles/dashboard.css";
 import axios from "axios";
+import axiosInstance from "../axios";
+import { ACTIONS } from "../utils/auditLogger";
+import { toast } from "react-toastify";
 
 function Dashboard({ currentUser, onLogout }) {
   const [activeView, setActiveView] = useState("welcome");
@@ -38,10 +41,12 @@ function Dashboard({ currentUser, onLogout }) {
   };
 
   const handleViewChange = (view, requiredPermission) => {
-    if (requiredPermission && !checkPermission(currentUser, PERMISSIONS.VIEW)) {
-      handlePermissionError();
-      return;
-    }
+    // ? this condition is buggy and seems to not wokr on all kinds of users: checkPermission(currentUser, PERMISSIONS.VIEW)
+    // if (requiredPermission && !checkPermission(currentUser, PERMISSIONS.VIEW)) {
+    //   handlePermissionError();
+    //   console.log(checkPermission(currentUser, PERMISSIONS.VIEW));
+    //   return;
+    // }
     setActiveView(view);
   };
 
@@ -84,10 +89,17 @@ function Dashboard({ currentUser, onLogout }) {
         let response = await axios.put(`${url}/${editingID}`, modifiedData);
 
         if (response.data.success === true) {
-          alert("Information updated successfully");
+          toast.success("Information updated successfully");
+
+          await axiosInstance.post("/system-logs", {
+            action: ACTIONS.EDIT,
+            module: "Resident List",
+            user: currentUser.id,
+            details: `User ${currentUser.username} updated resident information: ${modifiedData.headFirstName} ${modifiedData.headLastName}`,
+          });
         }
       } catch (error) {
-        alert("PLEASE FILL UP ALL THE REQUIRED FIELDS!");
+        toast.warning("PLEASE FILL UP ALL THE REQUIRED FIELDS!");
         // alert(error.response.data.error);
         console.log(error.response.data);
       }
@@ -108,16 +120,23 @@ function Dashboard({ currentUser, onLogout }) {
       try {
         let url = "http://localhost:8080/api/residents";
         let response = await axios.delete(`${url}/${deletingID}`);
-        alert("HEHEHHE");
         if (response.data.success === true) {
-          alert("Information deleted successfully");
+          toast.success("Information deleted successfully");
+
+          await axiosInstance.post("/system-logs", {
+            action: ACTIONS.EDIT,
+            module: "Resident List",
+            user: currentUser.id,
+            details: `User ${currentUser.username} deleted a resident information: ${response.data.deletedResident.headFirstName} ${response.data.deletedResident.headLastName}`,
+          });
+
           if (activeView === "list") {
             setActiveView("welcome");
             setTimeout(() => setActiveView("list"), 0);
           }
         }
       } catch (error) {
-        alert(error.response.data.error);
+        toast.error(error.response.data.error);
         console.log(error.response.data);
       }
     }
@@ -229,13 +248,20 @@ function Dashboard({ currentUser, onLogout }) {
                 Resident Management
               </button>
             )}
-            <button
-              onClick={() => handleViewChange("list", PERMISSIONS.MANAGE)}
-              className={`sidebar-btn ${activeView === "list" ? "active" : ""}`}
-            >
-              <i className="fas fa-list"></i>
-              View Resident List
-            </button>
+            {(checkPermission(currentUser, PERMISSIONS.MANAGE) ||
+              checkPermission(currentUser, PERMISSIONS.VIEW)) && (
+              <button
+                onClick={() => handleViewChange("list", PERMISSIONS.MANAGE)}
+                className={`sidebar-btn ${
+                  activeView === "list" ? "active" : ""
+                }`}
+              >
+                <i className="fas fa-list"></i>
+                {currentUser.role === "user"
+                  ? "View Your Information"
+                  : "View Resident List"}
+              </button>
+            )}
             {checkPermission(currentUser, PERMISSIONS.REPORTS) && (
               <button
                 onClick={() => handleViewChange("reports", PERMISSIONS.REPORTS)}

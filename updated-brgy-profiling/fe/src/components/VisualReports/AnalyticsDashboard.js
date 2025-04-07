@@ -8,6 +8,7 @@ import { checkPermission, PERMISSIONS } from '../Permission/Permissions';
 import PermissionErrorModal from '../Permission/PermissionErrorModal';
 import './AnalyticsDashboard.css';
 import axiosInstance from '../../axios';
+import { toast } from "react-toastify";
 
 const AnalyticsDashboard = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -215,6 +216,8 @@ const AnalyticsDashboard = () => {
 
     const period = timePeriod.toLowerCase();
     doc.save(`Barangay_Darasa_Analytics_${period}_${new Date().toISOString().split('T')[0]}.pdf`);
+
+    toast.success("Report exported successfully!")
   };
 
   const COLORS = ['#4C51BF', '#48BB78', '#4299E1', '#ED8936', '#9F7AEA', '#ED64A6'];

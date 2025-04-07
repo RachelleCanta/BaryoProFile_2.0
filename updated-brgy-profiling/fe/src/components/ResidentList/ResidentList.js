@@ -6,6 +6,10 @@ import PermissionErrorModal from "../Permission/PermissionErrorModal";
 import "../../styles/ResidentList.css";
 import axios from "axios";
 import { ResidentContext } from "../../contexts/residentContext";
+import axiosInstance from "../../axios";
+import { UserContext } from "../../contexts/userContext.js";
+import ExportToPDF from "./ExportToPDF.js";
+import { toast } from "react-toastify";
 
 function formatDate(dateString) {
   if (!dateString) return "";
@@ -29,7 +33,7 @@ function ResidentList({ onBack, onEditClick }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [selectedResident, setSelectedResident] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const { currentUser, setCurrentUser } = useContext(UserContext);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [expandedFamilies, setExpandedFamilies] = useState({});
 
@@ -69,8 +73,19 @@ function ResidentList({ onBack, onEditClick }) {
 
   const fetchResidents = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/residents`);
-      let fetchedResidents = response.data.data;
+      let response = null;
+      let fetchedResidents = [];
+
+      if (currentUser.role === "user") {
+        response = await axios.get(
+          `http://localhost:8080/api/residents/${currentUser.linkedResident}`
+        );
+        fetchedResidents = [response.data.data];
+      } else {
+        response = await axios.get(`http://localhost:8080/api/residents`);
+        fetchedResidents = response.data.data;
+      }
+
       console.log(fetchedResidents);
 
       // * normalize the data
@@ -110,14 +125,20 @@ function ResidentList({ onBack, onEditClick }) {
     }
   };
 
-  const toggleFamily = (index) => {
+  const toggleFamily = async (index, resident = null) => {
     setExpandedFamilies((prev) => ({
       ...prev,
       [index]: !prev[index],
     }));
+    await axiosInstance.post("/system-logs", {
+      action: ACTIONS.VIEW,
+      module: "Resident List",
+      user: currentUser.id,
+      details: `User ${currentUser.username} Viewed resident information: ${resident.headFirstName} ${resident.headLastName}`,
+    });
   };
 
-  const handleEdit = (index, id = null) => {
+  const handleEdit = async (index, id = null) => {
     // Debug logs to check permissions
     console.log("Current user:", currentUser);
     console.log("User permissions:", currentUser?.permissions);
@@ -134,17 +155,23 @@ function ResidentList({ onBack, onEditClick }) {
 
     const selectedResident = residents[index];
     // ! LOG EDIT ACT HERE
-    logResidentActivity(
-      currentUser?.username || "systemadmin",
-      "EDIT",
-      `Edited resident information for ${selectedResident.headFirstName} ${selectedResident.headLastName}`,
-      {
-        residentId: index,
-        cluster: selectedResident.cluster,
-        household: selectedResident.household,
-        module: "Resident Management",
-      }
-    );
+    // logResidentActivity(
+    //   currentUser?.username || "systemadmin",
+    //   "EDIT",
+    //   `Edited resident information for ${selectedResident.headFirstName} ${selectedResident.headLastName}`,
+    //   {
+    //     residentId: index,
+    //     cluster: selectedResident.cluster,
+    //     household: selectedResident.household,
+    //     module: "Resident Management",
+    //   }
+    // );
+    await axiosInstance.post("/system-logs", {
+      action: ACTIONS.VIEW,
+      module: "Resident List",
+      user: currentUser.id,
+      details: `User ${currentUser.username} opened resident information: ${selectedResident.headFirstName} ${selectedResident.headLastName} for editing`,
+    });
 
     // Ensure we're passing additionalInfos, not additionalInfo
     const editingData = {
@@ -260,11 +287,17 @@ function ResidentList({ onBack, onEditClick }) {
         let url = "http://localhost:8080/api/residents";
         let response = await axios.delete(`${url}/${id}`);
         if (response.data.success === true) {
-          alert("Information deleted successfully");
+          toast.success("Information deleted successfully");
+          await axiosInstance.post("/system-logs", {
+            action: ACTIONS.DELETE,
+            module: "Resident List",
+            user: currentUser.id,
+            details: `User ${currentUser.username} deleted a resident information: ${response.data.deletedResident.headFirstName} ${response.data.deletedResident.headLastName}`,
+          });
           await fetchResidents();
         }
       } catch (error) {
-        alert(error.response.data.error);
+        toast.error(error.response.data.error);
         console.log(error.response.data);
       }
     }
@@ -381,30 +414,42 @@ function ResidentList({ onBack, onEditClick }) {
   return (
     <div className="list-container">
       <div className="list-header">
-        <h2>Resident's List</h2>
-        <div className="search-filter-container">
-          <input
-            type="text"
-            placeholder="Search residents by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          <select
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            className="filter-select"
-          >
-            <option value="all">All Residents</option>
-            <option value="senior-citizen">Senior Citizens</option>
-            <option value="pwd">PWD</option>
-            <option value="ofw">OFW</option>
-            <option value="solo-parent">Solo Parent</option>
-            <option value="pregnant">Pregnant</option>
-            <option value="out-of-school-youth">Out of School Youth</option>
-            <option value="immigrant">Immigrant</option>
-          </select>
-        </div>
+        <h2>
+          {currentUser.role !== "user" ? "Resident's List" : "Your Information"}
+        </h2>
+        {currentUser.role !== "user" && (
+          <div className="search-filter-container">
+            <input
+              type="text"
+              placeholder="Search residents by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+            <select
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">All Residents</option>
+              <option value="senior-citizen">Senior Citizens</option>
+              <option value="pwd">PWD</option>
+              <option value="ofw">OFW</option>
+              <option value="solo-parent">Solo Parent</option>
+              <option value="pregnant">Pregnant</option>
+              <option value="out-of-school-youth">Out of School Youth</option>
+              <option value="immigrant">Immigrant</option>
+            </select>
+            <ExportToPDF
+              type={
+                filterCategory.charAt(0).toUpperCase() +
+                filterCategory.slice(1).toLowerCase()
+              }
+              data={filteredResidents ? filteredResidents : residents}
+              label={"EXPORT LIST TO PDF"}
+            ></ExportToPDF>
+          </div>
+        )}
       </div>
 
       {searchTerm ? (
@@ -529,6 +574,11 @@ function ResidentList({ onBack, onEditClick }) {
                               <i className="fas fa-trash"></i> Delete
                             </button>
                           )}
+                          <ExportToPDF
+                            data={[resident]}
+                            label={"EXPORT DATA TO PDF"}
+                            icon={true}
+                          ></ExportToPDF>
                         </div>
                       </div>
                     )}
@@ -676,6 +726,11 @@ function ResidentList({ onBack, onEditClick }) {
                                   <i className="fas fa-trash"></i> Delete
                                 </button>
                               )}
+                              <ExportToPDF
+                                data={[resident]}
+                                label={"EXPORT DATA TO PDF"}
+                                icon={true}
+                              ></ExportToPDF>
                             </div>
                           </div>
                         )
@@ -733,6 +788,11 @@ function ResidentList({ onBack, onEditClick }) {
                                   <i className="fas fa-trash"></i> Delete
                                 </button>
                               )}
+                              <ExportToPDF
+                                data={[resident]}
+                                label={"EXPORT DATA TO PDF"}
+                                icon={true}
+                              ></ExportToPDF>
                             </div>
                           </div>
                         )
@@ -848,6 +908,11 @@ function ResidentList({ onBack, onEditClick }) {
                                   <i className="fas fa-trash"></i> Delete
                                 </button>
                               )}
+                              <ExportToPDF
+                                data={[resident]}
+                                label={"EXPORT DATA TO PDF"}
+                                icon={true}
+                              ></ExportToPDF>
                             </div>
                           </div>
                         )
@@ -903,6 +968,11 @@ function ResidentList({ onBack, onEditClick }) {
                                   <i className="fas fa-trash"></i> Delete
                                 </button>
                               )}
+                              <ExportToPDF
+                                data={[resident]}
+                                label={"EXPORT DATA TO PDF"}
+                                icon={true}
+                              ></ExportToPDF>
                             </div>
                           </div>
                         )
@@ -960,6 +1030,11 @@ function ResidentList({ onBack, onEditClick }) {
                                   <i className="fas fa-trash"></i> Delete
                                 </button>
                               )}
+                              <ExportToPDF
+                                data={[resident]}
+                                label={"EXPORT DATA TO PDF"}
+                                icon={true}
+                              ></ExportToPDF>
                             </div>
                           </div>
                         )
@@ -972,7 +1047,7 @@ function ResidentList({ onBack, onEditClick }) {
                   <div key={index} className="family-card">
                     <div
                       className="family-header"
-                      onClick={() => toggleFamily(index)}
+                      onClick={() => toggleFamily(index, resident)}
                     >
                       <div className="header-content">
                         <div className="family-basic-info">
@@ -1017,8 +1092,10 @@ function ResidentList({ onBack, onEditClick }) {
                               Out of School Youth
                             </span>
                           )}
-                          {resident.additionalInfos?.some((info) =>
-                            info.immigrantNationality?.trim()
+                          {resident.additionalInfos?.some(
+                            (info) =>
+                              info.immigrantNationality?.trim() &&
+                              info.immigrantNationality !== "Not an immigrant"
                           ) && (
                             <span className="badge immigrant">Immigrant</span>
                           )}
@@ -1046,6 +1123,11 @@ function ResidentList({ onBack, onEditClick }) {
                               <i className="fas fa-trash"></i> Delete
                             </button>
                           )}
+                          <ExportToPDF
+                            data={[resident]}
+                            label={"EXPORT DATA TO PDF"}
+                            icon={true}
+                          ></ExportToPDF>
                         </div>
                       </div>
                       <div className="dropdown-arrow">

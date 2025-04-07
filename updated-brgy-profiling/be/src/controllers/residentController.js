@@ -1,4 +1,5 @@
 import { Resident } from "../models/residentModel.js";
+import { User } from "../models/userModel.js";
 
 const getResidentStatistics = async (req, res) => {
   try {
@@ -160,16 +161,45 @@ const updateResident = async (req, res) => {
 };
 
 const deleteResident = async (req, res) => {
+  // try {
+  //   const deletedResident = await Resident.findByIdAndDelete(req.params.id);
+  //   if (!deletedResident) {
+  //     return res
+  //       .status(404)
+  //       .json({ success: false, error: "Resident not found" });
+  //   }
+  //   res.status(200).json({
+  //     success: true,
+  //     message: "Resident deleted successfully",
+  //     deletedResident,
+  //   });
+  // } catch (error) {
+  //   res.status(500).json({ success: false, error: error.message });
+  // }
   try {
+    // Step 1: Delete the resident by ID
     const deletedResident = await Resident.findByIdAndDelete(req.params.id);
     if (!deletedResident) {
       return res
         .status(404)
         .json({ success: false, error: "Resident not found" });
     }
-    res
-      .status(200)
-      .json({ success: true, message: "Resident deleted successfully" });
+
+    // Step 2: Delete any documents in other collections that reference this resident ID
+    const deletedLinkedData = await User.deleteMany({
+      linkedResident: req.params.id, // Match documents where linkedResident matches the resident's ID
+    });
+
+    // Optionally handle the case where no linked data was deleted
+    if (deletedLinkedData.deletedCount === 0) {
+      console.log("No linked data found to delete.");
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Resident and linked data deleted successfully",
+      deletedResident,
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

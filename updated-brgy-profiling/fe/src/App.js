@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Landing from "./components/Landing";
+import NewLanding from "./components/NewLanding";
 import Dashboard from "./components/Dashboard";
 import ResidentForm from "./components/ResidentList/ResidentForm";
 import SystemLogs from "./components/SystemLogs/SystemLogs";
@@ -7,6 +8,7 @@ import "./styles/styles.css";
 import { logResidentActivity, ACTIONS } from "./utils/auditLogger";
 import axiosInstance from "./axios";
 import { UserContext } from "./contexts/userContext";
+import { toast } from "react-toastify";
 
 function App() {
   const [currentView, setCurrentView] = useState("landing");
@@ -31,33 +33,33 @@ function App() {
 
   const handleLogout = async () => {
     if (currentUser) {
-      logResidentActivity(
-        currentUser.username,
-        ACTIONS.LOGOUT,
-        "User logged out",
-        { module: "Authentication" }
-      );
+      // logResidentActivity(
+      //   currentUser.username,
+      //   ACTIONS.LOGOUT,
+      //   "User logged out",
+      //   { module: "Authentication" }
+      // );
+      await axiosInstance.post("/system-logs", {
+        action: "Logout",
+        module: "Authentication - Logout",
+        user: JSON.parse(localStorage.getItem("userId") || '""'), // Ensures proper formatting
+        details: `User ${currentUser.username} has logged out`,
+      });
+      localStorage.removeItem("currentUser");
+      setCurrentUser(null);
+      setCurrentView("landing");
+      toast.success("Logged Out Successfully!");
     }
-    await axiosInstance.post("/system-logs", {
-      action: "Logout",
-      module: "User logging out",
-      user: JSON.parse(localStorage.getItem("userId") || '""'), // Ensures proper formatting
-      details: `User ${currentUser.username} has logged out`,
-    });
-    localStorage.removeItem("currentUser");
-    setCurrentUser(null);
-    setCurrentView("landing");
   };
 
   const handleLogin = (user) => {
     setCurrentUser(user);
     localStorage.setItem("currentUser", JSON.stringify(user));
     setCurrentView("dashboard");
-
-    // Log the login action
-    logResidentActivity(user.username, ACTIONS.LOGIN, "User logged in", {
-      module: "Authentication",
-    });
+    // // Log the login action
+    // logResidentActivity(user.username, ACTIONS.LOGIN, "User logged in", {
+    //   module: "Authentication",
+    // });
   };
 
   const handleEditStart = () => {
@@ -92,7 +94,8 @@ function App() {
   const renderView = () => {
     switch (currentView) {
       case "landing":
-        return <Landing onLogin={handleLogin} />;
+        // return <Landing onLogin={handleLogin} />;
+        return <NewLanding onLogin={handleLogin} />;
 
       case "dashboard":
         return !isEditing ? (
@@ -110,7 +113,8 @@ function App() {
         return <SystemLogs onBack={() => setCurrentView("dashboard")} />;
 
       default:
-        return <Landing onLogin={handleLogin} />;
+        // return <Landing onLogin={handleLogin} />;
+        return <NewLanding onLogin={handleLogin} />;
     }
   };
 

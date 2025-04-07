@@ -5,6 +5,7 @@ import { PERMISSIONS } from "../Permission/Permissions";
 import "./UserManagement.css";
 import axiosInstance from "../../axios";
 import { UserContext } from "../../contexts/userContext.js";
+import { toast } from "react-toastify";
 
 const UserManagement = ({ onBack }) => {
   const [users, setUsers] = useState([]);
@@ -27,6 +28,7 @@ const UserManagement = ({ onBack }) => {
               : [], // Ensure permissions are always an array
           }));
         setUsers(users);
+        console.log(users);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -60,8 +62,9 @@ const UserManagement = ({ onBack }) => {
     setShowModal(true);
   };
 
-  const handleEditUser = (user) => {
+  const handleEditUser = async (user) => {
     // Prevent editing system admin if current user isn't admin
+    console.log("USER EDIT", user);
     if (user.role === "systemadmin") {
       if (
         currentUser.role === "systemadmin" &&
@@ -72,12 +75,18 @@ const UserManagement = ({ onBack }) => {
         setEditingUser(user);
         setShowModal(true);
       } else {
-        alert(
+        toast.error(
           "System administrator account can only be edited by the same administrator account"
         );
         return;
       }
     } else {
+      await axiosInstance.post("/system-logs", {
+        action: "View",
+        module: "User Management",
+        user: JSON.parse(localStorage.getItem("userId") || '""'), // Ensures proper formatting
+        details: `User ${currentUser.username} opened ${user.username} information for editing.`,
+      });
       setEditingUser(user);
       setShowModal(true);
     }
@@ -89,7 +98,7 @@ const UserManagement = ({ onBack }) => {
       console.log("Deleting user with ID:", userId); // Debugging log
 
       if (!userId) {
-        alert("Invalid user ID. Cannot delete user.");
+        toast.error("Invalid user ID. Cannot delete user.");
         return;
       }
       const userToDelete = users.find((user) => user._id === userId);
@@ -97,7 +106,7 @@ const UserManagement = ({ onBack }) => {
 
       // Make sure we're not deleting system admin
       if (userToDelete.role === "systemadmin") {
-        alert("Cannot delete system administrator account");
+        toast.error("Cannot delete system administrator account");
         return;
       }
 
@@ -105,12 +114,12 @@ const UserManagement = ({ onBack }) => {
       if (deletedUser.data.success) {
         await axiosInstance.post("/system-logs", {
           action: "Delete",
-          module: "User Deletion",
+          module: "User Management",
           user: JSON.parse(localStorage.getItem("userId") || '""'), // Ensures proper formatting
           details: `User with ID of ${userId} has been deleted!`,
         });
 
-        alert("User deleted successfully");
+        toast.success("User deleted successfully");
       }
 
       const updatedUsers = users.filter((user) => user._id !== userId);
@@ -129,12 +138,18 @@ const UserManagement = ({ onBack }) => {
         status: "active",
       });
       if (updatedUser.data.success) {
+        await axiosInstance.post("/system-logs", {
+          action: "Edit",
+          module: "User Management",
+          user: JSON.parse(localStorage.getItem("userId") || '""'), // Ensures proper formatting
+          details: `User with ID of ${userId} status' has been approved!`,
+        });
         await getUsers();
-        alert("User has been successfully approved");
+        toast.success("User has been successfully approved");
       }
     } catch (error) {
       console.error("Error fetching users:", error);
-      alert("An error occured. Please try again later...");
+      toast.error("An error occured. Please try again later...");
     }
   };
 
@@ -148,7 +163,7 @@ const UserManagement = ({ onBack }) => {
       );
 
       if (isDuplicateUsername) {
-        alert("Username already exists. Please choose a different username.");
+        toast.warning("Username already exists. Please choose a different username.");
         return;
       }
 
@@ -190,23 +205,26 @@ const UserManagement = ({ onBack }) => {
         );
         await axiosInstance.post("/system-logs", {
           action: "Edit",
-          module: "Updating a User",
+          module: "User Management",
           user: JSON.parse(localStorage.getItem("userId") || '""'), // Ensures proper formatting
           details: `User ${formData.username} profile has updated`,
         });
+        toast.success(`User ${formData.username} profile has updated`);
       } else {
         // Create a new user
         response = await axiosInstance.post("/users", submissionData);
         await axiosInstance.post("/system-logs", {
           action: "Create",
-          module: "User Creation",
+          module: "User Management",
           user: JSON.parse(localStorage.getItem("userId") || '""'), // Ensures proper formatting
           details: `User ${formData.username} was created`,
         });
+        toast.success(`User ${formData.username} was created`);
+        
       }
 
       if (!response || !response.data.success) {
-        alert("Error saving user. Please try again.");
+        toast.error("Error saving user. Please try again.");
         return;
       }
 
@@ -246,7 +264,7 @@ const UserManagement = ({ onBack }) => {
       setIsAnAdmin(false);
     } catch (error) {
       console.error("Error in handleSubmit:", error);
-      alert("An unexpected error occurred. Please try again.");
+      toast.error("An unexpected error occurred. Please try again.");
     }
   };
 
