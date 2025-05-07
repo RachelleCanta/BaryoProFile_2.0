@@ -1012,6 +1012,7 @@ function ResidentForm({ onBack, onSave }) {
           ethnicity: "",
           isRegisteredVoter: "",
           schoolLevel: "",
+          hlec: "",
           schoolPlace: "",
           houseLot: "",
           waterSupply: "",
@@ -2127,6 +2128,22 @@ function ResidentForm({ onBack, onSave }) {
                     }
                   >
                     {voterOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group" style={styles.formGroup}>
+                  <label>HIGHEST LEVEL OF EDUCATION:</label>
+                  <select
+                    name="hlec"
+                    value={member.hlec}
+                    onChange={(e) =>
+                      handleFamilyMemberChange(index, "hlec", e.target.value)
+                    }
+                  >
+                    {educationLevels.map((option) => (
                       <option key={option} value={option}>
                         {option}
                       </option>

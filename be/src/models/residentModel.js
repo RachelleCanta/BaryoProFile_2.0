@@ -82,6 +82,7 @@ const ResidentSchema = new mongoose.Schema(
         isRegisteredVoter: { type: Boolean },
         schoolLevel: { type: String },
         placeOfSchool: { type: String },
+        hlec: { type: String, default: "N/A" },
 
         houseLot: { type: String, default: "" },
         waterSupply: { type: String, default: "" },

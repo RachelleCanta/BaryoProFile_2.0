@@ -71,6 +71,7 @@ export const FamilyProvider = ({ children }) => {
     religion: "Roman Catholic",
     ethnicity: "Tagalog",
     voter: "Not Registered",
+    hlec: "Elementary Level",
     schoolLevel: "N/A",
     schoolPlace: "N/A",
 

@@ -241,7 +241,12 @@ const getResidentStatistics = async (req, res) => {
           info?.immigrantNationality.toLowerCase() !== "not an immigrant"
         )
           immigrantCount++;
-        if (info?.outOfSchool?.toLowerCase() === "yes") osyCount++;
+
+        if (
+          info?.outOfSchool?.toLowerCase() !== "n/a" &&
+          info?.outOfSchool !== ""
+        )
+          osyCount++;
       });
     });
 

@@ -331,6 +331,7 @@ const  BaseComponent = ({
                             <th>Religion</th>
                             <th>Ethnicity</th>
                             <th>Voter</th>
+                            <th>HLE</th>
                             <th>School Level</th>
                             <th>School Place</th>
                           </tr>
@@ -346,6 +347,7 @@ const  BaseComponent = ({
                                   ? "Registered"
                                   : "Not Registered" || ""}
                               </td>
+                              <td>{member.hlec || ""}</td>
                               <td>{member.schoolLevel || ""}</td>
                               <td>{member.placeOfSchool || ""}</td>
                             </tr>

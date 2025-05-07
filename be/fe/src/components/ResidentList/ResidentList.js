@@ -269,6 +269,7 @@ function ResidentList({ onBack, onEditClick }) {
           member.IsRegisteredVoter === true
             ? "Registered"
             : "Not Registered" || "",
+        hlec: member.hlec || "",
         schoolLevel: member.schoolLevel || "",
         placeOfSchool: member.placeOfSchool || "",
       })),
@@ -665,6 +666,7 @@ function ResidentList({ onBack, onEditClick }) {
                           {
                             name: `${resident.spouseFirstName} ${resident.spouseMiddleName} ${resident.spouseLastName}`,
                             role: "Spouse",
+                            _id: resident._id,
                             deletion: resident.deletion,
                           },
                         ]
@@ -674,6 +676,7 @@ function ResidentList({ onBack, onEditClick }) {
                       name: `${member.firstName} ${member.middleName} ${member.lastName}`,
                       role: member.relationship,
                       deletion: resident.deletion,
+                      _id: resident._id,
                     })) || []),
                   ];
 

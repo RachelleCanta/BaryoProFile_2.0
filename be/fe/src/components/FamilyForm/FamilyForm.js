@@ -938,6 +938,7 @@ function FamilyForm({ onBack }) {
             : member.religion,
         ethnicity: member.ethnicity,
         isRegisteredVoter: member.voter === "Registered" ? true : false,
+        hlec: member.hlec,
         schoolLevel: member.schoolLevel,
         placeOfSchool: member.schoolPlace,
 
@@ -2258,6 +2259,7 @@ function FamilyForm({ onBack }) {
                   <th>RELIGION</th>
                   <th>ETHNICITY</th>
                   <th>REGISTERED VOTER</th>
+                  <th>HIGHEST LEVEL OF EDUCATION</th>
                   <th className="education-col">
                     SCHOOL LEVEL
                     <br />
@@ -2536,6 +2538,21 @@ function FamilyForm({ onBack }) {
                         required
                       >
                         {voterOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={member.hlec}
+                        onChange={(e) =>
+                          setFormData({ ...formData, hlec: e.target.value })
+                        }
+                        required
+                      >
+                        {educationLevels.map((option) => (
                           <option key={option} value={option}>
                             {option}
                           </option>

@@ -897,46 +897,46 @@ const AnalyticsDashboard = () => {
                   ))}
                 </div>
 
-                <div className="charts-grid">
-                  <div className="chart-container">
-                    <h3 className="chart-title">Population by Age Group</h3>
-                    <div className="chart-content">
-                      {ageData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={400}>
-                          <PieChart>
-                            <Pie
-                              data={ageData}
-                              cx="50%"
-                              cy="50%"
-                              outerRadius={140}
-                              innerRadius={80}
-                              fill="#8884d8"
-                              dataKey="value"
-                              label={({ name, value, percent }) =>
-                                `${name}: ${value} (${(percent * 100).toFixed(
-                                  1
-                                )}%)`
-                              }
-                            >
-                              {ageData.map((entry, index) => (
-                                <Cell
-                                  key={`cell-${index}`}
-                                  fill={COLORS[index % COLORS.length]}
-                                />
-                              ))}
-                            </Pie>
-                            <Tooltip
-                              formatter={(value) => [value, "Population"]}
-                            />
-                            <Legend />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <NoDataMessage />
-                      )}
-                    </div>
+                <div className="chart-container">
+                  <h3 className="chart-title">Population by Age Group</h3>
+                  <div className="chart-content">
+                    {ageData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={400}>
+                        <PieChart>
+                          <Pie
+                            data={ageData}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={140}
+                            innerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                            label={({ name, value, percent }) =>
+                              `${name}: ${value} (${(percent * 100).toFixed(
+                                1
+                              )}%)`
+                            }
+                          >
+                            {ageData.map((entry, index) => (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={COLORS[index % COLORS.length]}
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            formatter={(value) => [value, "Population"]}
+                          />
+                          <Legend />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <NoDataMessage />
+                    )}
                   </div>
+                </div>
 
+                <div className="charts-grid">
                   <div className="chart-container">
                     <h3 className="chart-title">
                       Special Sectors Distribution
