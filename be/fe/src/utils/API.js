@@ -1,0 +1,3 @@
+const MAIN_API_LINK = "https://baryoprofile.onrender.com/api";
+// const MAIN_API_LINK = "http://localhost:9090/api";
+export { MAIN_API_LINK };

@@ -1,0 +1,454 @@
+/* Enhanced Stylized Edit Form */
+.edit-form-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: linear-gradient(145deg, #ffffff, #f3f4f6);
+    border-radius: 1.5rem;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Header Styles */
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+    position: relative;
+}
+
+.form-header::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.form-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #1e40af, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Styles */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.cancel-btn, .save-btn {
+    padding: 0.75rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cancel-btn {
+    background: linear-gradient(145deg, #ffffff, #f3f4f6);
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.05),
+        inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.cancel-btn:hover {
+    background: linear-gradient(145deg, #f3f4f6, #e5e7eb);
+    transform: translateY(-1px);
+}
+
+.save-btn {
+    background: linear-gradient(145deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    box-shadow: 
+        0 4px 6px rgba(59, 130, 246, 0.25),
+        0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+.save-btn:hover {
+    background: linear-gradient(145deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 
+        0 6px 8px rgba(59, 130, 246, 0.3),
+        0 4px 6px rgba(59, 130, 246, 0.2);
+}
+
+/* Form Section Styles */
+.form-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+.form-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #3b82f6, #2563eb);
+    border-radius: 4px;
+}
+
+.section-table .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0039CC;
+    margin: 15px 0;
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* For the diamond icons before titles */
+.section-table .section-title::before {
+    content: '◆';
+    color: #0039CC;
+    font-size: 14px;
+}
+
+.section-title::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(45deg, #3b82f6, #2563eb);
+    border-radius: 6px;
+    transform: rotate(45deg);
+}
+
+/* Form Grid and Fields */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+    display: flex;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+
+.form-input:hover {
+    border-color: #93c5fd;
+    background: white;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 
+        0 0 0 4px rgba(59, 130, 246, 0.1),
+        0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Input States and Validation */
+.form-group.has-error .form-input {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.form-group.has-success .form-input {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.validation-message {
+    position: absolute;
+    bottom: -1.5rem;
+    left: 0;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.error-message {
+    color: #ef4444;
+}
+
+.success-message {
+    color: #10b981;
+}
+
+/* Custom Select Styling */
+select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234b5563'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+/* Custom Radio and Checkbox Styles */
+.custom-radio,
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.custom-radio:hover,
+.custom-checkbox:hover {
+    background: #f3f4f6;
+}
+
+/* Animated Add/Remove Buttons */
+.add-btn,
+.remove-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.add-btn {
+    background: linear-gradient(145deg, #10b981, #059669);
+    color: white;
+}
+
+.remove-btn {
+    background: linear-gradient(145deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.add-btn:hover,
+.remove-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(110%);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .edit-form-container {
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .form-actions {
+        width: 100%;
+    }
+
+    .cancel-btn,
+    .save-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Loading States */
+.form-input.loading {
+    background-image: linear-gradient(90deg, #f3f4f6 0px, #e5e7eb 40px, #f3f4f6 80px);
+    background-size: 600px;
+    animation: shine 1.6s infinite linear;
+}
+
+@keyframes shine {
+    0% {
+        background-position: -100px;
+    }
+    100% {
+        background-position: 140px;
+    }
+}
+
+/* Tooltip Styles */
+.form-group[data-tooltip] {
+    position: relative;
+}
+
+.form-group[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5rem 1rem;
+    background: #1f2937;
+    color: white;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.form-group[data-tooltip]:hover::after {
+    opacity: 1;
+    bottom: calc(100% + 5px);
+}
+
+/* Section Transitions */
+.form-section {
+    transition: all 0.3s ease;
+}
+
+.form-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 8px -1px rgba(0, 0, 0, 0.1),
+        0 4px 6px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Add these new styles */
+.resident-edit-title {
+    position: relative;
+    color: #0039CC;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 20px 0;
+    padding-left: 35px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #0039CC;
+}
+
+.resident-edit-title::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: #0039CC;
+    font-size: 24px;
+}
+
+.resident-add-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.resident-edit-save {
+    background-color: #0039CC;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 10px 0;
+    width: auto;
+}
+
+.resident-edit-cancel {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.resident-edit-actions {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+
+.pregnant-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.months-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+/* Style disabled fields */
+select:disabled,
+input:disabled {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+    color: #999;
+    border-color: #ddd;
+}
+
+/* Style placeholders */
+::placeholder {
+    color: #aaa;
+    font-style: italic;
+    font-size: 11px;
+}

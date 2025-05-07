@@ -1,0 +1,33 @@
+@port = 9090
+@baseUrl = http://localhost:{{port}}/api
+
+### * Create
+POST {{baseUrl}}/certificates
+Content-Type: application/json
+
+{
+  "action": "Login",
+  "module": "Authentication",
+  "user": "67e2aed0fce7da39a1472d00",
+  "details": "User logged in successfully"
+}
+
+### * Get All 
+GET {{baseUrl}}/certificates?filterType=Monthly&filterValue=4
+
+### * Get by ID
+GET {{baseUrl}}/certificates/67e2bb5e38c5fd2325315cfc
+
+### * Updateby ID
+PUT {{baseUrl}}/certificates/67e2bb5e38c5fd2325315cfc
+Content-Type: application/json
+
+{
+  "details": "User login attempt failed"
+}
+
+### * Deletby ID
+DELETE {{baseUrl}}/certificates/65f6e4d1c2a5f5d6f12ab346
+
+### * Delete All
+DELETE {{baseUrl}}/certificates/all

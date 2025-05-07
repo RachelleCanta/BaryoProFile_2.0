@@ -1,0 +1,63 @@
+@port = 8080
+@baseUrl = http://localhost:{{port}}/api
+
+### * Register User (Default Viewer)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "testuser@example.com",
+  "password": "password123",
+  "role": "user"
+}
+
+### * Register Staff with Editor Type
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "staffuser",
+  "email": "staffuser@example.com",
+  "password": "password123",
+  "role": "staff",
+  "editorType": "edit_only"
+}
+
+### * Login User
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+  "email": "sysadd@example.com",
+  "password": "systemadmin123"
+}
+
+### * Get User Profile
+GET {{baseUrl}}/users/profile/67e2aed4fce7da39a1472d03
+
+### * Get User by ID
+GET {{baseUrl}}/users/67e2aed4fce7da39a1472d03
+
+### * Get All Users
+GET {{baseUrl}}/users
+
+### * Update User Role (Test Permissions Update)
+PUT {{baseUrl}}/users/67e2aed4fce7da39a1472d03
+Content-Type: application/json
+
+{
+  "role": "staff",
+  "editorType": "all"
+}
+
+### * Update Staff Editor Type (Test Dynamic Permissions)
+PUT {{baseUrl}}/users/67e2aed4fce7da39a1472d03
+Content-Type: application/json
+
+{
+  "editorType": "add_only"
+}
+
+### * Delete User
+DELETE {{baseUrl}}/users/65f6e4d1c2a5f5d6f12ab345

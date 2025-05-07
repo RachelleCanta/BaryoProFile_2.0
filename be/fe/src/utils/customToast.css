@@ -1,0 +1,33 @@
+.custom-toast-outer-div {
+  display: flex;
+  flex-flow: column nowrap;
+  width: 100%;
+  padding:0.5rem;
+}
+
+.custom-toast-outer-div > p {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.custom-toast-inner-div {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+.custom-toast-inner-div button {
+  width: 100%;
+  border-radius: 15px;
+  border: none;
+  color: white;
+}
+
+.yes-btn {
+  background-color: #16a34a;
+}
+
+.no-btn {
+  background-color: #b91c1c;
+}

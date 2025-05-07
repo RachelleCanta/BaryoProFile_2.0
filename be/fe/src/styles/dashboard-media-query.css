@@ -1,0 +1,17 @@
+@media screen and (max-width: 700px) {
+  .dashboard-navbar {
+    justify-content: center;
+  }
+
+  .navbar-brand {
+    flex-flow: column nowrap;
+  }
+
+  .navbar-actions {
+    width: 100%;
+  }
+
+  .navbar-actions > * {
+    flex: 1;
+  }
+}
