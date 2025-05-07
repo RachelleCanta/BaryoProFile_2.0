@@ -64,13 +64,13 @@ const SystemLogs = () => {
   };
 
   let filteredLogs = logs.filter((log) => {
-    // const user = typeof log.user === "string" ? log.user : "";
-    // const action = typeof log.action === "string" ? log.action : "";
-    // const module = typeof log.module === "string" ? log.module : "";
+    const user = typeof log.user === "string" ? log.user : "";
+    const action = typeof log.action === "string" ? log.action : "";
+    const module = typeof log.module === "string" ? log.module : "";
 
-    const user = log.user.username;
-    const action = log.action;
-    const module = log.module;
+    // const user = log.user.username;
+    // const action = log.action;
+    // const module = log.module;
 
     const matchesSearch =
       user.toLowerCase().includes(searchQuery.toLowerCase()) ||

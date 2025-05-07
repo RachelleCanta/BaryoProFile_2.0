@@ -1342,7 +1342,12 @@ const getResidents = async (req, res) => {
       ageGroup,
       name,
       all,
+      forUsers,
     } = req.query;
+
+    if (sex) {
+      console.error("SEX : ", sex);
+    }
 
     // Initialize aggregation pipeline
     let pipeline = [];
@@ -1400,6 +1405,7 @@ const getResidents = async (req, res) => {
         {
           $project: {
             _id: 0,
+            deletion: "$deletion",
             householdId: "$_id",
             name: "$additionalInfos.name",
             headLastName: "$headLastName",
@@ -1970,6 +1976,8 @@ const getResidents = async (req, res) => {
           { "familyMembers.lastName": { $regex: name, $options: "i" } },
         ],
       }).sort({ headLastName: 1 });
+    } else if (forUsers === "true") {
+      residents = await Resident.find({});
     } else {
       console.log("FILTER");
       residents = await Resident.aggregate(pipeline);

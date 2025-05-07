@@ -48,7 +48,6 @@ function formatDate(dateString) {
   }
 }
 
-
 function ResidentList({ onBack, onEditClick }) {
   const [residents, setResidents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -117,7 +116,7 @@ function ResidentList({ onBack, onEditClick }) {
         url = `${MAIN_API_LINK}/residents?ageGroup=${e.target.value}`;
       }
 
-      if (["Male", "Female", "LGBTQ+"].includes(e.target.value)) {
+      if (["Male", "Female", "LGBTQ%2B"].includes(e.target.value)) {
         url = `${MAIN_API_LINK}/residents?sex=${e.target.value}`;
       }
 
@@ -159,7 +158,7 @@ function ResidentList({ onBack, onEditClick }) {
     setCurrentUser(user);
   }, []);
 
-  const handleNameClick = (resident, index, id=null) => {
+  const handleNameClick = (resident, index, id = null) => {
     // Check if user has MANAGE permission for editing
     if (checkPermission(currentUser, PERMISSIONS.MANAGE)) {
       handleEdit(index, id);
@@ -304,6 +303,9 @@ function ResidentList({ onBack, onEditClick }) {
   };
 
   const handleDelete = async (resident, id = null) => {
+    console.log(resident);
+    // alert(resident);
+    // alert(id);
     if (!checkPermission(currentUser, PERMISSIONS.MANAGE)) {
       // Changed from DELETE to MANAGE
       setShowErrorModal(true);
@@ -340,6 +342,8 @@ function ResidentList({ onBack, onEditClick }) {
           user: currentUser.id,
           details: `User ${currentUser.username} deleted a resident information: ${response.data.deletedResident.headFirstName} ${response.data.deletedResident.headLastName}`,
         });
+        setFilterCategory("all");
+        setSearchTerm("");
         await fetchResidents();
       }
     } catch (error) {
@@ -384,6 +388,8 @@ function ResidentList({ onBack, onEditClick }) {
                 user: currentUser.id,
                 details: `User ${currentUser.username} request deletion for resident: ${response.data.data.headFirstName} ${response.data.data.headLastName}`,
               });
+              setFilterCategory("all");
+              setSearchTerm("");
               await fetchResidents();
               setShowDeletionRequest(false);
               setDeletionReason("");
@@ -415,6 +421,8 @@ function ResidentList({ onBack, onEditClick }) {
                 user: currentUser.id,
                 details: `User ${currentUser.username} deleted a resident information: ${response.data.deletedResident.headFirstName} ${response.data.deletedResident.headLastName}`,
               });
+              setFilterCategory("all");
+              setSearchTerm("");
               await fetchResidents();
               setShowDeletionRequest(false);
               setDeletionReason("");
@@ -466,6 +474,8 @@ function ResidentList({ onBack, onEditClick }) {
               details: `User ${currentUser.username} rejected information deletion of : ${response.data.data.headFirstName} ${response.data.data.headLastName}`,
             });
             await fetchResidents();
+            setFilterCategory("all");
+            setSearchTerm("");
             setShowDeletionRequest(false);
             setDeletionReason("");
             setDeletionReasonID("");
@@ -616,7 +626,7 @@ function ResidentList({ onBack, onEditClick }) {
                 <option value="immigrant">Immigrant</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
-                <option value="LGBTQ+">LGBTQ+</option>
+                <option value="LGBTQ%2B">LGBTQ+</option>
                 <option value="0-14">Ages 0-14</option>
                 <option value="15-29">Ages 15-29</option>
                 <option value="30-59">Ages 30-59</option>
@@ -639,97 +649,107 @@ function ResidentList({ onBack, onEditClick }) {
         {searchTerm ? (
           // * Search Results View
           <div className="search-results">
-            {residents.map((resident, index) => {
-              const allFamilyMembers = [
-                // {
-                //   _id: resident._id,
-                // },
-                // Head
-                {
-                  name: `${resident.headFirstName} ${resident.headMiddleName} ${resident.headLastName}`,
-                  role: "Head of Family",
-                  _id: resident._id,
-                },
-                // Spouse (if exists)
-                ...(resident.spouseFirstName
-                  ? [
-                      {
-                        name: `${resident.spouseFirstName} ${resident.spouseMiddleName} ${resident.spouseLastName}`,
-                        role: "Spouse",
-                        _id: resident._id,
-                      },
-                    ]
-                  : []),
-                // Other family members
-                ...(resident.familyMembers?.map((member) => ({
-                  name: `${member.firstName} ${member.middleName} ${member.lastName}`,
-                  role: member.relationship,
-                  _id: resident._id,
-                })) || []),
-              ];
+            {residents.length >= 1 && (
+              <>
+                {residents.map((resident, index) => {
+                  const allFamilyMembers = [
+                    {
+                      name: `${resident.headFirstName} ${resident.headMiddleName} ${resident.headLastName}`,
+                      role: "Head of Family",
+                      _id: resident._id,
+                      deletion: resident.deletion,
+                    },
+                    // Spouse (if exists)
+                    ...(resident.spouseFirstName
+                      ? [
+                          {
+                            name: `${resident.spouseFirstName} ${resident.spouseMiddleName} ${resident.spouseLastName}`,
+                            role: "Spouse",
+                            deletion: resident.deletion,
+                          },
+                        ]
+                      : []),
+                    // Other family members
+                    ...(resident.familyMembers?.map((member) => ({
+                      name: `${member.firstName} ${member.middleName} ${member.lastName}`,
+                      role: member.relationship,
+                      deletion: resident.deletion,
+                    })) || []),
+                  ];
 
-              return (
-                <div key={index} className="search-result-card">
-                  {allFamilyMembers
-                    .filter((member) =>
-                      member.name
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase())
-                    )
-                    .map((member, mIndex) => (
-                      <div
-                        key={mIndex}
-                        className="member-result"
-                        onClick={() =>
-                          // handleNameClick(resident, index, member._id)
-                          handleNameClick(resident, index, member._id)
-                        }
-                      >
-                        <div className="member-name">{member.name}</div>
-                        <div className="member-details">
-                          <span>{member.role}</span>
-                          <span>•</span>
-                          <span>Cluster: {resident.cluster}</span>
-                          <span>•</span>
-                          <span>Household: {resident.householdNo}</span>
-                        </div>
-                        <div className="member-actions">
-                          {checkPermission(currentUser, PERMISSIONS.MANAGE) && ( // Changed from EDIT to MANAGE
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit(index, resident._id);
-                              }}
-                              className="edit-btn"
-                            >
-                              <i className="fas fa-edit"></i> Edit
-                            </button>
-                          )}
-                          {checkPermission(currentUser, PERMISSIONS.MANAGE) && ( // Changed from DELETE to MANAGE
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(index, resident._id);
-                              }}
-                              className="delete-btn"
-                            >
-                              <i className="fas fa-trash"></i> Delete
-                            </button>
-                          )}
-                          <ExportToPDF
-                            data={[resident]}
-                            label={"Export List"}
-                            icon={true}
-                            isProcessing={processing[resident._id]}
-                            setIsProcessing={setProcessing}
-                            index={resident._id}
-                          ></ExportToPDF>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              );
-            })}
+                  return (
+                    <div key={index} className="search-result-card">
+                      {allFamilyMembers
+                        .filter((member) =>
+                          member.name
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                        )
+                        .map((member, mIndex) => (
+                          <div
+                            key={mIndex}
+                            className="member-result"
+                            onClick={() =>
+                              // handleNameClick(resident, index, member._id)
+                              handleNameClick(resident, index, member._id)
+                            }
+                          >
+                            <div className="member-name">{member.name}</div>
+                            <div className="member-details">
+                              <span>{member.role}</span>
+                              <span>•</span>
+                              <span>Cluster: {resident.cluster}</span>
+                              <span>•</span>
+                              <span>Household: {resident.householdNo}</span>
+                            </div>
+                            <div className="member-actions">
+                              {checkPermission(
+                                currentUser,
+                                PERMISSIONS.MANAGE
+                              ) && ( // Changed from EDIT to MANAGE
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEdit(index, resident._id);
+                                  }}
+                                  className="edit-btn"
+                                >
+                                  <i className="fas fa-edit"></i> Edit
+                                </button>
+                              )}
+                              {checkPermission(
+                                currentUser,
+                                PERMISSIONS.MANAGE
+                              ) && ( // Changed from DELETE to MANAGE
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(resident, resident._id);
+                                  }}
+                                  className="delete-btn"
+                                >
+                                  <i className="fas fa-trash"></i>{" "}
+                                  {resident.deletion?.reason
+                                    ? "Pending Deletion"
+                                    : "Delete"}
+                                </button>
+                              )}
+                              <ExportToPDF
+                                data={[resident]}
+                                label={"Export List"}
+                                icon={true}
+                                isProcessing={processing[resident._id]}
+                                setIsProcessing={setProcessing}
+                                index={resident._id}
+                              ></ExportToPDF>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </div>
         ) : (
           // * Regular List View

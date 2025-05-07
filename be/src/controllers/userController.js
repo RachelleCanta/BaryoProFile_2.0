@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { User } from "../models/userModel.js";
 import { AuditLog } from "../models/systemLogModel.js";
 
-// * Register User
+// * register new user
 const registerUser = async (req, res) => {
   try {
     const { username, email, password, role, editorType } = req.body;

@@ -495,11 +495,12 @@ const  BaseComponent = ({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDelete(index, resident.householdId);
+                    handleDelete(resident, resident.householdId);
                   }}
                   className="delete-btn"
                 >
-                  <i className="fas fa-trash"></i> Delete
+                  <i className="fas fa-trash"></i>{" "}
+                  {resident.deletion?.reason ? "Pending Deletion" : "Delete"}
                 </button>
               )}
               <ExportToPDF

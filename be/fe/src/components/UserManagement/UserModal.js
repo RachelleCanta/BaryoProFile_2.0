@@ -30,10 +30,10 @@ const UserModal = ({
   const fetchResidents = async () => {
     try {
       // let response = await axios.get(`http://localhost:8080/api/residents`);
-      let response = await axios.get(`${MAIN_API_LINK}/residents`);
+      let response = await axios.get(`${MAIN_API_LINK}/residents?forUsers=true`);
 
       let fetchedResidents = response.data.data;
-      console.log(fetchedResidents);
+      console.log("FETCHED RESIDENTS", fetchedResidents);
 
       // * normalize the data
       const normalizedResidents = fetchedResidents.map((resident) => {

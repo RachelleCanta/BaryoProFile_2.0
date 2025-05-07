@@ -17,10 +17,9 @@ function App() {
   const [residents, setResidents] = useState([]);
   const { currentUser, setCurrentUser } = useContext(UserContext);
 
-  // ! UNCOMMENT THIS ON FINAL
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      // event.preventDefault();
+      event.preventDefault();
       localStorage.removeItem("currentUser");
     };
 

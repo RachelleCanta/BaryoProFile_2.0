@@ -2328,13 +2328,53 @@ function ResidentForm({ onBack, onSave }) {
               <div className="form-grid">
                 <div className="form-group" style={styles.formGroup}>
                   <label>Name:</label>
-                  <input
+                  <select
+                    value={info.name}
+                    onChange={(e) =>
+                      handleAdditionalInfoChange(index, "name", e.target.value)
+                    }
+                    required
+                  >
+                    <option value="">Select Names</option>
+
+                    {formData.headFirstName &&
+                      formData.headMiddleName &&
+                      formData.headLastName && (
+                        <option
+                          key="head"
+                          value={`${formData.headFirstName} ${formData.headMiddleName} ${formData.headLastName}`}
+                        >
+                          {`${formData.headFirstName} ${formData.headMiddleName} ${formData.headLastName}`}
+                        </option>
+                      )}
+
+                    {formData.spouseFirstName &&
+                      formData.spouseMiddleName &&
+                      formData.spouseLastName && (
+                        <option
+                          key="spouse"
+                          value={`${formData.spouseFirstName} ${formData.spouseMiddleName} ${formData.spouseLastName}`}
+                        >
+                          {`${formData.spouseFirstName} ${formData.spouseMiddleName} ${formData.spouseLastName}`}
+                        </option>
+                      )}
+
+                    {formData.familyMembers.map((member, idx) => {
+                      const fullName = `${member.firstName} ${member.middleName} ${member.lastName}`;
+                      return (
+                        <option key={`member-${idx}`} value={fullName}>
+                          {fullName}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {/* <input
                     type="text"
                     value={info.name}
                     onChange={(e) =>
                       handleAdditionalInfoChange(index, "name", e.target.value)
                     }
-                  />
+                  /> */}
                 </div>
                 <div className="form-group" style={styles.formGroup}>
                   <label>Pregnant:</label>
