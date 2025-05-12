@@ -15,8 +15,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .responsive-table-container {
@@ -790,5 +794,9 @@ input:disabled {
 
 .pob-hint {
   font-size: 0.8rem;
-  color:gray;
+  color: gray;
+}
+
+table > tbody {
+  border-bottom: 2rem solid transparent;
 }

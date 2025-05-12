@@ -17,18 +17,19 @@ function App() {
   const [residents, setResidents] = useState([]);
   const { currentUser, setCurrentUser } = useContext(UserContext);
 
-  useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      event.preventDefault();
-      localStorage.removeItem("currentUser");
-    };
+  // ! CHANGE TO 10 MINS TIMEOUT
+  // useEffect(() => {
+  //   const handleBeforeUnload = (event) => {
+  //     event.preventDefault();
+  //     localStorage.removeItem("currentUser");
+  //   };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, []);
 
   useEffect(() => {
     const savedUser = currentUser;

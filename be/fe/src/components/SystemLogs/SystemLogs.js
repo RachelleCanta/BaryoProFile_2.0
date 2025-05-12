@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import { CustomToast } from "../../utils/CustomToast";
 import * as XLSX from "xlsx-js-style";
 
-const SystemLogs = () => {
+const SystemLogs = ({onBack}) => {
   const [logs, setLogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedActivity, setSelectedActivity] = useState("All Activities");
@@ -320,6 +320,10 @@ const SystemLogs = () => {
 
   return (
     <div className="system-logs-container">
+      <button onClick={onBack} className="back-btn">
+        Back to Menu
+      </button>
+      
       <div className="system-logs-header">
         <h1>System Activity Logs</h1>
         <div className="header-controls">

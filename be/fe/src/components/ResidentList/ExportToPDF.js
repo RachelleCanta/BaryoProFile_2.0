@@ -27,6 +27,34 @@ const ExportToExcel = ({
     today.getMonth() + 1
   }/${today.getDate()}/${today.getFullYear()}`;
 
+  const getResidenceYears = (selectedDate) => {
+    const today = new Date();
+    const date = new Date(selectedDate);
+    let computed = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+    const dayDiff = today.getDate() - date.getDate();
+
+    // Check if date is valid
+    if (
+      isNaN(date.getTime()) ||
+      selectedDate === "" ||
+      selectedDate === 0 ||
+      Number.isInteger(selectedDate)
+    ) {
+      return 0;
+    }
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      computed--;
+    }
+
+    if (computed <= 0) {
+      computed = 0;
+    }
+
+    return computed;
+  };
+
   async function fetchAndAppendResidentData(fileUrl, residents) {
     try {
       let residentIds = [];
@@ -101,7 +129,8 @@ const ExportToExcel = ({
         sheet1.getCell("AB16").value = resArg.headHouseLot;
         sheet1.getCell("AD16").value = resArg.headWaterSupply;
         sheet1.getCell("AF16").value = resArg.headComfortRoom;
-        sheet1.getCell("AH16").value = resArg.headResidence;
+        sheet1.getCell("AH16").value =
+          getResidenceYears(resArg.headResidence) || 0;
 
         // SPOUSE
         sheet1.getCell("A22").value = resArg.spouseFirstName;
@@ -126,7 +155,11 @@ const ExportToExcel = ({
         sheet1.getCell("AB22").value = resArg.spouseHouseLot;
         sheet1.getCell("AD22").value = resArg.spouseWaterSupply;
         sheet1.getCell("AF22").value = resArg.spouseComfortRoom;
-        sheet1.getCell("AH22").value = resArg.spouseResidence;
+        sheet1.getCell("AH22").value =
+          getResidenceYears(resArg.spouseResidence) || 0;
+
+        sheet1.getCell("AE51").value = currentUser.username;
+        sheet1.getCell("AE52").value = formatted;
 
         // FAMILY MEMBERS
         let famRow = 28;
@@ -154,7 +187,8 @@ const ExportToExcel = ({
             sheet1.getCell(`AB${famRow}`).value = member.houseLot;
             sheet1.getCell(`AD${famRow}`).value = member.waterSupply;
             sheet1.getCell(`AF${famRow}`).value = member.comfortRoom;
-            sheet1.getCell(`AH${famRow}`).value = member.residence;
+            sheet1.getCell(`AH${famRow}`).value =
+              getResidenceYears(member.residence) || 0;
             famRow++;
           }
         }
@@ -188,7 +222,7 @@ const ExportToExcel = ({
 
         if (isSingle) {
           singleWorkbookBlob = new Blob([updatedBuffer]);
-          fileName = `Household-${resArg.householdNo}`;
+          fileName = `${formatted}-Household-${resArg.householdNo}`;
         } else {
           zip.file(`${headLastName}_ResidentData.xlsx`, updatedBuffer);
         }

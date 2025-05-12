@@ -1,6 +1,6 @@
 import { checkPermission, PERMISSIONS } from "../Permission/Permissions";
 
-const  BaseComponent = ({
+const BaseComponent = ({
   index,
   type,
   resident,
@@ -17,6 +17,34 @@ const  BaseComponent = ({
   function capitalizeFirstLetter(val) {
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
   }
+
+  const getResidenceYears = (selectedDate) => {
+    const today = new Date();
+    const date = new Date(selectedDate);
+    let computed = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+    const dayDiff = today.getDate() - date.getDate();
+
+    // Check if date is valid
+    if (
+      isNaN(date.getTime()) ||
+      selectedDate === "" ||
+      selectedDate === 0 ||
+      Number.isInteger(selectedDate)
+    ) {
+      return 0;
+    }
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      computed--;
+    }
+
+    if (computed <= 0) {
+      computed = 0;
+    }
+
+    return computed;
+  };
 
   return (
     <>
@@ -159,6 +187,7 @@ const  BaseComponent = ({
                         <th>House and Lot</th>
                         <th>Water Supply</th>
                         <th>Comfort Room</th>
+                        <th>Residence Start Date</th>
                         <th>Residence Years</th>
                       </tr>
                     </thead>
@@ -176,6 +205,9 @@ const  BaseComponent = ({
                         <td>{resident.headWaterSupply || ""}</td>
                         <td>{resident.headComfortRoom || ""}</td>
                         <td>{resident.headResidence || 0}</td>
+                        <td>
+                          {getResidenceYears(resident.headResidence) || 0}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -224,6 +256,7 @@ const  BaseComponent = ({
                             <th>House and Lot</th>
                             <th>Water Supply</th>
                             <th>Comfort Room</th>
+                            <th>Residence Start Date</th>
                             <th>Residence Years</th>
                           </tr>
                         </thead>
@@ -237,10 +270,11 @@ const  BaseComponent = ({
                             <td>{formatDate(resident.spouseBirthday)}</td>
                             <td>{resident.spousePlaceOfBirth || ""}</td>
                             <td>{resident.spouseNationality || ""}</td>
-                            <td>{resident.headHouseAndLot || ""}</td>
-                            <td>{resident.headWaterSupply || ""}</td>
-                            <td>{resident.headComfortRoom || ""}</td>
-                            <td>{resident.headResidence || 0}</td>
+                            <td>{resident.spouseHouseAndLot || ""}</td>
+                            <td>{resident.spouseWaterSupply || ""}</td>
+                            <td>{resident.spouseComfortRoom || ""}</td>
+                            <td>{resident.spouseResidence || 0}</td>
+                            <td>{getResidenceYears(resident.spouseResidence) || 0}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -298,6 +332,7 @@ const  BaseComponent = ({
                             <th>House and Lot</th>
                             <th>Water Supply</th>
                             <th>Comfort Room</th>
+                            <th>Residence Start Date</th>
                             <th>Residence Years</th>
                           </tr>
                         </thead>
@@ -317,6 +352,7 @@ const  BaseComponent = ({
                               <td>{member.waterSupply || ""}</td>
                               <td>{member.comfortRoom || ""}</td>
                               <td>{member.residence || 0}</td>
+                              <td>{getResidenceYears(member.residence) || 0}</td>
                             </tr>
                           ))}
                         </tbody>

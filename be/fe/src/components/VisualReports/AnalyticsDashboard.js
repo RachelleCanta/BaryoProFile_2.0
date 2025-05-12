@@ -29,7 +29,7 @@ import ExcelJS from "exceljs";
 import { MAIN_API_LINK } from "../../utils/API";
 import JSZip from "jszip";
 
-const AnalyticsDashboard = () => {
+const AnalyticsDashboard = ({ onBack }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [summaryData, setSummaryData] = useState([]);
   const [ageData, setAgeData] = useState([]);
@@ -48,6 +48,8 @@ const AnalyticsDashboard = () => {
   const [certificatesIssuedListData, setCertificatesIssuedListData] = useState(
     []
   );
+
+  const [graphFilter, setGraphFilter] = useState("BRGY SUMMARY");
 
   const certificateTypes = [
     "Barangay Clearance",
@@ -476,7 +478,20 @@ const AnalyticsDashboard = () => {
 
         const templateBuffer = await response.arrayBuffer();
         let singleWorkbookBlob = null;
-        let fileName = "BRGY_POPULATION_BY_AGE_GENDER_REPORT.xlsx";
+        // let fileName = `${timePeriod} Report for ${selectedValue} - BRGY POPULATION (BY AGE AND GENDER).xlsx`;
+        const readableValue =
+          timePeriod === "Monthly"
+            ? new Date(0, parseInt(selectedValue) - 1).toLocaleString(
+                "default",
+                {
+                  month: "long",
+                }
+              )
+            : timePeriod === "Quarterly"
+            ? `Q${selectedValue}`
+            : selectedValue || "N/A";
+
+        let fileName = `${timePeriod} Report for ${readableValue} - BRGY POPULATION (BY AGE AND GENDER).xlsx`;
 
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.load(templateBuffer);
@@ -581,6 +596,12 @@ const AnalyticsDashboard = () => {
         sheet1.getCell("Q39").value = dataByAgeGender.sixtyAbove.lgbtqPlus;
         sheet1.getCell("V39").value = dataByAgeGender.sixtyAbove.totalCount;
 
+        sheet1.getCell("T42").value = currentUser.username;
+        sheet1.getCell(
+          "T43"
+        ).value = `${timePeriod} Report for ${readableValue}`;
+        sheet1.getCell("T44").value = formatted;
+
         const updatedBuffer = await workbook.xlsx.writeBuffer();
 
         singleWorkbookBlob = new Blob([updatedBuffer]);
@@ -644,6 +665,26 @@ const AnalyticsDashboard = () => {
     };
 
     // Combine sections with spacing
+    // let fullData = [
+    //   [{ v: `Printed By: ${currentUser?.username || "Unknown"}` }],
+    //   [
+    //     {
+    //       v: `Report Type: ${timePeriod} Report for ${
+    //         timePeriod === "Monthly"
+    //           ? new Date(0, parseInt(selectedValue) - 1).toLocaleString(
+    //               "default",
+    //               {
+    //                 month: "long",
+    //               }
+    //             )
+    //           : selectedValue || "N/A"
+    //       }`,
+    //     },
+    //   ],
+    //   [{ v: `Date Printed: ${formatted}` }],
+    //   [], // Empty row as spacing before actual table content
+    // ];
+
     let fullData = [];
 
     fullData = fullData.concat(buildSection(summaryData));
@@ -653,6 +694,25 @@ const AnalyticsDashboard = () => {
     fullData.push([]); // Empty row
 
     fullData = fullData.concat(buildSection(certSumData));
+
+    fullData.push([]); // Empty row before footer
+
+    const formattedDate = new Date().toLocaleString();
+    const readableValue =
+      timePeriod === "Monthly"
+        ? new Date(0, parseInt(selectedValue) - 1).toLocaleString("default", {
+            month: "long",
+          })
+        : timePeriod === "Quarterly"
+        ? `Q${selectedValue}`
+        : selectedValue || "N/A";
+
+    // Add footer lines
+    fullData.push([{ v: `Printed By: ${currentUser?.username || "Unknown"}` }]);
+    fullData.push([
+      { v: `Report Type: ${timePeriod} Report for ${readableValue}` },
+    ]);
+    fullData.push([{ v: `Date Printed: ${formattedDate}` }]);
 
     // Create sheet from AoA
     const worksheet = XLSX.utils.aoa_to_sheet(fullData);
@@ -745,6 +805,15 @@ const AnalyticsDashboard = () => {
     setSelectedValue(value);
   };
 
+  const handleGraphFilterChange = (e) => {
+    setGraphFilter(e.target.value);
+    if (e.target.value === "cert-list") {
+      setOpenCertificatesIssued(true);
+    } else {
+      setOpenCertificatesIssued(false);
+    }
+  };
+
   const handleValueChange = (e) => {
     setSelectedValue(e.target.value);
   };
@@ -804,6 +873,9 @@ const AnalyticsDashboard = () => {
 
   return (
     <div className="analytics-container">
+      <button onClick={onBack} className="back-btn">
+        Back to Menu
+      </button>
       <div className="analytics-header">
         {openReportsAnalytics && (
           <>
@@ -860,44 +932,50 @@ const AnalyticsDashboard = () => {
                 )}
                 {!openCertificatesIssued && (
                   <button className="export-button" onClick={exportReportExcel}>
-                    Export Report
+                    Export All Report
                   </button>
                 )}
               </div>
-
-              <button
-                className={
-                  "cert-list-button " +
-                  (!openCertificatesIssued ? "green" : "red")
-                }
-                onClick={() => setOpenCertificatesIssued((prev) => !prev)}
-              >
-                {!openCertificatesIssued ? "OPEN" : "CLOSE"}{" "}
-                {"CERTIFICATES ISSUED LIST"}
-              </button>
+              <div className="controls-section">
+                <select
+                  className="time-select"
+                  value={graphFilter}
+                  onChange={handleGraphFilterChange}
+                >
+                  <option value="BRGY SUMMARY">BRGY SUMMARY</option>
+                  <option value="age">Population By Age</option>
+                  <option value="sex">Population By Gender/Sex</option>
+                  <option value="special">Special Distribution Sectors</option>
+                  <option value="cert-graph">Certificates Graph</option>
+                  <option value="cert-list">Certificates List</option>
+                  <option value="all">All Graphs and Summary</option>
+                </select>
+              </div>
             </div>
 
             {!openCertificatesIssued && (
               <>
-                <div className="summary-grid">
-                  {summaryData.map((item, index) => (
-                    <div key={index} className="summary-card">
-                      <div className="card-content">
-                        <p className="card-title">{item.Title}</p>
-                        <div className="value-section">
-                          <h2 className="card-value">{item.Count}</h2>
-                          <span className="card-change">
-                            <ArrowUpIcon className="h-4 w-4" />
-                            {item.Change}
-                          </span>
+                {(graphFilter === "BRGY SUMMARY" || graphFilter === "all") && (
+                  <div className="summary-grid">
+                    {summaryData.map((item, index) => (
+                      <div key={index} className="summary-card">
+                        <div className="card-content">
+                          <p className="card-title">{item.Title}</p>
+                          <div className="value-section">
+                            <h2 className="card-value">{item.Count}</h2>
+                            <span className="card-change">
+                              <ArrowUpIcon className="h-4 w-4" />
+                              {item.Change}
+                            </span>
+                          </div>
+                          <p className="card-subtext">{item.Description}</p>
                         </div>
-                        <p className="card-subtext">{item.Description}</p>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
 
-                <div className="chart-container">
+                {/* <div className="chart-container">
                   <h3 className="chart-title">Population by Age Group</h3>
                   <div className="chart-content">
                     {ageData.length > 0 ? (
@@ -934,10 +1012,44 @@ const AnalyticsDashboard = () => {
                       <NoDataMessage />
                     )}
                   </div>
-                </div>
+                </div> */}
+
+                {(graphFilter === "age" || graphFilter === "all") && (
+                  <div className="chart-container">
+                    <h3 className="chart-title">Population by Age Group</h3>
+                    <div className="chart-content">
+                      {ageData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={400}>
+                          <BarChart
+                            data={ageData}
+                            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip
+                              formatter={(value) => [value, "Population"]}
+                            />
+                            {/* <Legend /> */}
+                            <Bar dataKey="value" fill="#8884d8">
+                              {ageData.map((entry, index) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={COLORS[index % COLORS.length]}
+                                />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <NoDataMessage />
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="charts-grid">
-                  <div className="chart-container">
+                  {/* <div className="chart-container">
                     <h3 className="chart-title">
                       Special Sectors Distribution
                     </h3>
@@ -980,9 +1092,60 @@ const AnalyticsDashboard = () => {
                         <NoDataMessage />
                       )}
                     </div>
-                  </div>
+                  </div> */}
 
-                  <div className="chart-container">
+                  {(graphFilter === "special" || graphFilter === "all") && (
+                    <div className="chart-container">
+                      <h3 className="chart-title">
+                        Special Sectors Distribution
+                      </h3>
+                      <div className="chart-content">
+                        {specialSectorsData.length > 0 ? (
+                          <ResponsiveContainer width="100%" height={400}>
+                            <BarChart
+                              data={specialSectorsData}
+                              margin={{
+                                top: 20,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                              }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="Category" />
+                              <YAxis />
+                              <Tooltip
+                                formatter={(value) => [
+                                  `${value} residents`,
+                                  "",
+                                ]}
+                              />
+                              {/* <Legend /> */}
+                              <Bar
+                                dataKey="Count"
+                                radius={[4, 4, 0, 0]}
+                                label={{
+                                  position: "top",
+                                  formatter: (value) => value,
+                                }}
+                              >
+                                {specialSectorsData.map((entry, index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORSSPEC[index % COLORSSPEC.length]}
+                                  />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        ) : (
+                          <NoDataMessage />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* <div className="chart-container">
                     <h3 className="chart-title">Population By Sex</h3>
                     <div className="chart-content">
                       {sexGenderData.length > 0 ? (
@@ -1019,38 +1182,85 @@ const AnalyticsDashboard = () => {
                         <NoDataMessage />
                       )}
                     </div>
-                  </div>
+                  </div> */}
+                  {(graphFilter === "sex" || graphFilter === "all") && (
+                    <div className="chart-container">
+                      <h3 className="chart-title">Population By Sex</h3>
+                      <div className="chart-content">
+                        {sexGenderData.length > 0 ? (
+                          <ResponsiveContainer width="100%" height={400}>
+                            <BarChart
+                              data={sexGenderData}
+                              margin={{
+                                top: 20,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                              }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="name" />
+                              <YAxis />
+                              <Tooltip
+                                formatter={(value) => [
+                                  `${value}`,
+                                  "Population",
+                                ]}
+                              />
+                              {/* <Legend /> */}
+                              <Bar
+                                dataKey="value"
+                                radius={[4, 4, 0, 0]}
+                                label={{ position: "top" }}
+                              >
+                                {sexGenderData.map((entry, index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % COLORS.length]}
+                                  />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        ) : (
+                          <NoDataMessage />
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                <div className="chart-container">
-                  <h3 className="chart-title">Certificates Issued</h3>
-                  <div className="chart-content">
-                    {certSumData.length > 0 ? (
-                      <ResponsiveContainer width="100%" height={400}>
-                        <BarChart data={certSumData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="Certificate" />
-                          <YAxis />
-                          <Tooltip />
-                          <Bar dataKey="Count">
-                            {certSumData.map((entry, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={
-                                  certificateColors[
-                                    index % certificateColors.length
-                                  ]
-                                }
-                              />
-                            ))}
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    ) : (
-                      <NoDataMessage />
-                    )}
+                {(graphFilter === "cert-graph" || graphFilter === "all") && (
+                  <div className="chart-container">
+                    <h3 className="chart-title">Certificates Issued</h3>
+                    <div className="chart-content">
+                      {certSumData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={400}>
+                          <BarChart data={certSumData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="Certificate" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="Count">
+                              {certSumData.map((entry, index) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={
+                                    certificateColors[
+                                      index % certificateColors.length
+                                    ]
+                                  }
+                                />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <NoDataMessage />
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             )}
           </>

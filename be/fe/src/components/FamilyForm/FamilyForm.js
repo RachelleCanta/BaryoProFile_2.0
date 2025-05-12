@@ -21,6 +21,13 @@ function FamilyForm({ onBack }) {
     setAdditionalInfos,
   } = useContext(FamilyContext);
 
+  const { headSpouseResidenceDate, setHeadSpouseResidenceDate } = useState({
+    head: "",
+    spouse: "",
+  });
+
+  const [famMemberResidenceDate, setFamMemberResidenceDate] = useState([]);
+
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [otherReligion, setOtherReligion] = useState({
@@ -877,10 +884,12 @@ function FamilyForm({ onBack }) {
         completeData.headHouseLot === "Other"
           ? otherHouseAndLot.head
           : completeData.headHouseLot,
-      headWaterSupply: completeData.headWaterSupply === "Other"
+      headWaterSupply:
+        completeData.headWaterSupply === "Other"
           ? otherWaterSupply.head
           : completeData.headWaterSupply,
-      headComfortRoom: completeData.headComfortRoom === "Other"
+      headComfortRoom:
+        completeData.headComfortRoom === "Other"
           ? otherComfortRoom.head
           : completeData.headComfortRoom,
       headResidence: completeData.headResidence,
@@ -910,10 +919,12 @@ function FamilyForm({ onBack }) {
         completeData.spouseHouseLot === "Other"
           ? otherHouseAndLot.spouse
           : completeData.spouseHouseLot,
-      spouseWaterSupply: completeData.spouseWaterSupply === "Other"
+      spouseWaterSupply:
+        completeData.spouseWaterSupply === "Other"
           ? otherWaterSupply.spouse
           : completeData.spouseWaterSupply,
-      spouseComfortRoom: completeData.spouseComfortRoom === "Other"
+      spouseComfortRoom:
+        completeData.spouseComfortRoom === "Other"
           ? otherComfortRoom.spouse
           : completeData.spouseComfortRoom,
       spouseResidence: completeData.spouseResidence,
@@ -942,13 +953,16 @@ function FamilyForm({ onBack }) {
         schoolLevel: member.schoolLevel,
         placeOfSchool: member.schoolPlace,
 
-        houseLot: member.houseLot === "Other"
+        houseLot:
+          member.houseLot === "Other"
             ? otherHouseAndLotFamMember[index]?.houseAndLot
             : member.houseLot,
-        waterSupply: member.waterSupply === "Other"
+        waterSupply:
+          member.waterSupply === "Other"
             ? otherWaterSupplyFamMember[index]?.waterSupply
             : member.waterSupply,
-        comfortRoom: member.comfortRoom === "Other"
+        comfortRoom:
+          member.comfortRoom === "Other"
             ? otherComfortRoomFamMember[index]?.comfortRoom
             : member.comfortRoom,
         residence: member.residence,
@@ -1024,6 +1038,34 @@ function FamilyForm({ onBack }) {
     }
 
     return computedAge;
+  };
+
+  const getResidenceYears = (selectedDate) => {
+    const today = new Date();
+    const date = new Date(selectedDate);
+    let computed = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+    const dayDiff = today.getDate() - date.getDate();
+
+    // Check if date is valid
+    if (
+      isNaN(date.getTime()) ||
+      selectedDate === "" ||
+      selectedDate === 0 ||
+      Number.isInteger(selectedDate)
+    ) {
+      return 0;
+    }
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      computed--;
+    }
+
+    if (computed <= 0) {
+      computed = 0;
+    }
+
+    return computed;
   };
 
   const clearForm = () => {
@@ -1305,7 +1347,7 @@ function FamilyForm({ onBack }) {
     updated[index][field] = value;
     setOtherWaterSupplyFamMember(updated);
   };
-  
+
   const handleOtherComfortRoomFamMemberChange = (index, field, value) => {
     const updated = [...otherComfortRoomFamMember];
 
@@ -1341,6 +1383,10 @@ function FamilyForm({ onBack }) {
 
   return (
     <div className="family-member-container" style={{ padding: 10 }}>
+      <button onClick={onBack} className="back-btn">
+        Back to Menu
+      </button>
+
       <div className="logo-part">
         <div className="logo-spacer"></div>
         <div className="darasa">
@@ -1502,35 +1548,6 @@ function FamilyForm({ onBack }) {
                 <th>SEX</th>
                 <th>BIRTHDAY DD/MM/YYYY</th>
                 <th>AGE</th>
-                <th>
-                  PLACE OF BIRTH
-                  <br />
-                  <span className="pob-hint">(Ex. Talisay, Batangas)</span>
-                </th>
-                <th>NATIONALITY</th>
-                <th>MARITAL STATUS</th>
-                <th>RELIGION</th>
-                <th>ETHNICITY</th>
-                <th>REGISTERED VOTER</th>
-                <th>HIGHEST LEVEL OF EDUCATION</th>
-                <th className="education-col">
-                  SCHOOL LEVEL
-                  <br />
-                  <span className="note-text">(For ages 3-24 only)</span>
-                </th>
-                <th className="education-col">
-                  PLACE OF SCHOOL
-                  <br />
-                  <span className="note-text">(For ages 3-24 only)</span>
-                </th>
-                <th>HOUSE & LOT</th>
-                <th>WATER SUPPLY</th>
-                <th>COMFORT ROOM</th>
-                <th>
-                  RESIDENCE YEARS
-                  <br />
-                  <span className="note-text">(In Darasa)</span>
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -1615,6 +1632,25 @@ function FamilyForm({ onBack }) {
                     required
                   />
                 </td>
+              </tr>
+            </tbody>
+            <thead>
+              <tr>
+                <th>
+                  PLACE OF BIRTH
+                  <br />
+                  <span className="pob-hint">(Ex. Talisay, Batangas)</span>
+                </th>
+                <th>NATIONALITY</th>
+                <th>MARITAL STATUS</th>
+                <th>RELIGION</th>
+                <th>ETHNICITY</th>
+                <th>REGISTERED VOTER</th>
+                <th>HIGHEST LEVEL OF EDUCATION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
                 <td>
                   <input
                     type="text"
@@ -1739,6 +1775,37 @@ function FamilyForm({ onBack }) {
                     ))}
                   </select>
                 </td>
+              </tr>
+            </tbody>
+            <thead>
+              <tr>
+                <th className="education-col">
+                  SCHOOL LEVEL
+                  <br />
+                  <span className="note-text">(For ages 3-24 only)</span>
+                </th>
+                <th className="education-col">
+                  PLACE OF SCHOOL
+                  <br />
+                  <span className="note-text">(For ages 3-24 only)</span>
+                </th>
+                <th>HOUSE & LOT</th>
+                <th>WATER SUPPLY</th>
+                <th>COMFORT ROOM</th>
+                <th>
+                  RESIDENCE START DATE
+                  <br />
+                  <span className="note-text">(In Darasa)</span>
+                </th>
+                <th>
+                  RESIDENCE YEARS
+                  <br />
+                  <span className="note-text">(In Darasa)</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
                 <td>
                   <select
                     value={formData.schoolLevel}
@@ -1845,15 +1912,22 @@ function FamilyForm({ onBack }) {
                 </td>
                 <td>
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    placeholder="Years in Darasa"
+                    type="date"
                     value={formData.headResidence}
                     onChange={(e) =>
                       handleFormDataChange("headResidence", e.target.value)
                     }
                     required
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    disabled
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="Years in Darasa"
+                    value={getResidenceYears(formData.headResidence)}
                   />
                 </td>
               </tr>
@@ -1874,35 +1948,6 @@ function FamilyForm({ onBack }) {
                 <th>SEX</th>
                 <th>BIRTHDAY DD/MM/YYYY</th>
                 <th>AGE</th>
-                <th>
-                  PLACE OF BIRTH
-                  <br />
-                  <span className="pob-hint">(Ex. Talisay, Batangas)</span>
-                </th>
-                <th>NATIONALITY</th>
-                <th>MARITAL STATUS</th>
-                <th>RELIGION</th>
-                <th>ETHNICITY</th>
-                <th>REGISTERED VOTER</th>
-                <th>HIGHEST LEVEL OF EDUCATION</th>
-                <th className="education-col">
-                  SCHOOL LEVEL
-                  <br />
-                  <span className="note-text">(For ages 3-24 only)</span>
-                </th>
-                <th className="education-col">
-                  PLACE OF SCHOOL
-                  <br />
-                  <span className="note-text">(For ages 3-24 only)</span>
-                </th>
-                <th>HOUSE & LOT</th>
-                <th>WATER SUPPLY</th>
-                <th>COMFORT ROOM</th>
-                <th>
-                  RESIDENCE YEARS
-                  <br />
-                  <span className="note-text">(In Darasa)</span>
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -1985,6 +2030,25 @@ function FamilyForm({ onBack }) {
                     }
                   />
                 </td>
+              </tr>
+            </tbody>
+            <thead>
+              <tr>
+                <th>
+                  PLACE OF BIRTH
+                  <br />
+                  <span className="pob-hint">(Ex. Talisay, Batangas)</span>
+                </th>
+                <th>NATIONALITY</th>
+                <th>MARITAL STATUS</th>
+                <th>RELIGION</th>
+                <th>ETHNICITY</th>
+                <th>REGISTERED VOTER</th>
+                <th>HIGHEST LEVEL OF EDUCATION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
                 <td>
                   <input
                     type="text"
@@ -2060,7 +2124,6 @@ function FamilyForm({ onBack }) {
                     />
                   )}
                 </td>
-
                 <td>
                   <select
                     value={formData.spouseEthnicity}
@@ -2107,6 +2170,37 @@ function FamilyForm({ onBack }) {
                     ))}
                   </select>
                 </td>
+              </tr>
+            </tbody>
+            <thead>
+              <tr>
+                <th className="education-col">
+                  SCHOOL LEVEL
+                  <br />
+                  <span className="note-text">(For ages 3-24 only)</span>
+                </th>
+                <th className="education-col">
+                  PLACE OF SCHOOL
+                  <br />
+                  <span className="note-text">(For ages 3-24 only)</span>
+                </th>
+                <th>HOUSE & LOT</th>
+                <th>WATER SUPPLY</th>
+                <th>COMFORT ROOM</th>
+                <th>
+                  RESIDENCE START DATE
+                  <br />
+                  <span className="note-text">(In Darasa)</span>
+                </th>
+                <th>
+                  RESIDENCE YEARS
+                  <br />
+                  <span className="note-text">(In Darasa)</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
                 <td>
                   <select
                     value={formData.spouseSchoolLevel}
@@ -2216,14 +2310,22 @@ function FamilyForm({ onBack }) {
                 </td>
                 <td>
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    placeholder="Years in Darasa"
+                    type="date"
                     value={formData.spouseResidence}
                     onChange={(e) =>
                       handleFormDataChange("spouseResidence", e.target.value)
                     }
+                    required
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    disabled
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="Years in Darasa"
+                    value={getResidenceYears(formData.spouseResidence)}
                     required
                   />
                 </td>
@@ -2239,52 +2341,16 @@ function FamilyForm({ onBack }) {
           </div>
           {showFamilyMembers ? (
             <table className="responsive-table">
-              <thead>
-                <tr>
-                  <th>Action</th>
-                  <th>FIRST NAME</th>
-                  <th>MIDDLE NAME</th>
-                  <th>LAST NAME</th>
-                  <th>RELATIONSHIP</th>
-                  <th>SEX</th>
-                  <th>BIRTHDAY</th>
-                  <th>AGE</th>
-                  <th>
-                    PLACE OF BIRTH
-                    <br />
-                    <span className="pob-hint">(Ex. Talisay, Batangas)</span>
-                  </th>
-                  <th>NATIONALITY</th>
-                  <th>MARITAL STATUS</th>
-                  <th>RELIGION</th>
-                  <th>ETHNICITY</th>
-                  <th>REGISTERED VOTER</th>
-                  <th>HIGHEST LEVEL OF EDUCATION</th>
-                  <th className="education-col">
-                    SCHOOL LEVEL
-                    <br />
-                    <span className="note-text">(For ages 3-24 only)</span>
-                  </th>
-                  <th className="education-col">
-                    PLACE OF SCHOOL
-                    <br />
-                    <span className="note-text">(For ages 3-24 only)</span>
-                  </th>
-                  <th>HOUSE & LOT</th>
-                  <th>WATER SUPPLY</th>
-                  <th>COMFORT ROOM</th>
-                  <th>
-                    RESIDENCE YEARS
-                    <br />
-                    <span className="note-text">(In Darasa)</span>
-                  </th>
-                </tr>
-              </thead>
               <tbody>
                 {familyMembers.map((member, index) => (
                   <tr key={index}>
                     <td>
                       <button
+                        style={{
+                          width: "100%",
+                          backgroundColor: "#E02D2D",
+                          color: "white",
+                        }}
                         type="button"
                         onClick={() => removeFamilyMember(index)}
                         className="remove-info-btn"
@@ -2293,431 +2359,531 @@ function FamilyForm({ onBack }) {
                       </button>
                     </td>
                     <td>
-                      <input
-                        type="text"
-                        value={member.firstName}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "firstName",
-                            e.target.value
-                          )
-                        }
-                        required
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        value={member.middleName}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "middleName",
-                            e.target.value
-                          )
-                        }
-                        required
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        value={member.lastName}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "lastName",
-                            e.target.value
-                          )
-                        }
-                        required
-                      />
-                    </td>
-                    <td>
-                      <select
-                        value={member.relationship}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "relationship",
-                            e.target.value
-                          )
-                        }
-                        required
-                      >
-                        {relationshipOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
+                      <table className="responsive-table">
+                        <thead>
+                          <tr>
+                            <th>FIRST NAME</th>
+                            <th>MIDDLE NAME</th>
+                            <th>LAST NAME</th>
+                            <th>RELATIONSHIP</th>
+                            <th>SEX</th>
+                            <th>BIRTHDAY</th>
+                            <th>AGE</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr key={index}>
+                            <td>
+                              <input
+                                type="text"
+                                value={member.firstName}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "firstName",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                value={member.middleName}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "middleName",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                value={member.lastName}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "lastName",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              />
+                            </td>
+                            <td>
+                              <select
+                                value={member.relationship}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "relationship",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {relationshipOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
 
-                      {member.relationship === "Other" && (
-                        <input
-                          type="text"
-                          placeholder="Relationship"
-                          value={
-                            otherRelationshipFamMember[index]?.relationship ||
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleOtherRelationshipFamilyMemberChange(
-                              index,
-                              "relationship",
-                              e.target.value
-                            )
-                          }
-                          className="months-input"
-                        />
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        value={member.sex}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(index, "sex", e.target.value)
-                        }
-                        required
-                      >
-                        {sexOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type="date"
-                        value={member.birthday}
-                        onChange={(e) => {
-                          handleFamilyMemberChange(
-                            index,
-                            "birthday",
-                            e.target.value
-                          );
-                          handleFamilyMemberChange(
-                            index,
-                            "age",
-                            handleDateChange(e)
-                          );
-                        }}
-                        required
-                      />
-                    </td>
-                    <td>
-                      <input
-                        disabled
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        value={member.age}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(index, "age", e.target.value)
-                        }
-                        required
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        value={member.placeOfBirth}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "placeOfBirth",
-                            e.target.value
-                          )
-                        }
-                        required
-                      />
-                    </td>
-                    <td>
-                      <select
-                        value={member.nationality}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "nationality",
-                            e.target.value
-                          )
-                        }
-                        required
-                      >
-                        {nationalityOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        value={member.maritalStatus}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "maritalStatus",
-                            e.target.value
-                          )
-                        }
-                        required
-                      >
-                        {maritalOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        value={member.religion}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "religion",
-                            e.target.value
-                          )
-                        }
-                        required
-                      >
-                        {religionOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
+                              {member.relationship === "Other" && (
+                                <input
+                                  type="text"
+                                  placeholder="Relationship"
+                                  value={
+                                    otherRelationshipFamMember[index]
+                                      ?.relationship || ""
+                                  }
+                                  onChange={(e) =>
+                                    handleOtherRelationshipFamilyMemberChange(
+                                      index,
+                                      "relationship",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="months-input"
+                                />
+                              )}
+                            </td>
+                            <td>
+                              <select
+                                value={member.sex}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "sex",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {sexOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <input
+                                type="date"
+                                value={member.birthday}
+                                onChange={(e) => {
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "birthday",
+                                    e.target.value
+                                  );
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "age",
+                                    handleDateChange(e)
+                                  );
+                                }}
+                                required
+                              />
+                            </td>
+                            <td>
+                              <input
+                                disabled
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                value={member.age}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "age",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                        <thead>
+                          <tr>
+                            <th>
+                              PLACE OF BIRTH
+                              <br />
+                              <span className="pob-hint">
+                                (Ex. Talisay, Batangas)
+                              </span>
+                            </th>
+                            <th>NATIONALITY</th>
+                            <th>MARITAL STATUS</th>
+                            <th>RELIGION</th>
+                            <th>ETHNICITY</th>
+                            <th>REGISTERED VOTER</th>
+                            <th>HIGHEST LEVEL OF EDUCATION</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr key={index}>
+                            <td>
+                              <input
+                                type="text"
+                                value={member.placeOfBirth}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "placeOfBirth",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              />
+                            </td>
+                            <td>
+                              <select
+                                value={member.nationality}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "nationality",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {nationalityOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <select
+                                value={member.maritalStatus}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "maritalStatus",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {maritalOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <select
+                                value={member.religion}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "religion",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {religionOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
 
-                      {member.religion === "Other" && (
-                        <input
-                          type="text"
-                          placeholder="Religion"
-                          value={otherReligionFamMember[index]?.religion || ""}
-                          onChange={(e) =>
-                            handleOtherReligionFamilyMemberChange(
-                              index,
-                              "religion",
-                              e.target.value
-                            )
-                          }
-                          className="months-input"
-                        />
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        value={member.ethnicity}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "ethnicity",
-                            e.target.value
-                          )
-                        }
-                        required
-                      >
-                        {ethnicityOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        value={member.voter}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "voter",
-                            e.target.value
-                          )
-                        }
-                        required
-                      >
-                        {voterOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        value={member.hlec}
-                        onChange={(e) =>
-                          setFormData({ ...formData, hlec: e.target.value })
-                        }
-                        required
-                      >
-                        {educationLevels.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        value={member.schoolLevel}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "schoolLevel",
-                            e.target.value
-                          )
-                        }
-                        required
-                        disabled={member.age < 3 || member.age > 24}
-                      >
-                        {educationLevels.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        value={member.schoolPlace}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "schoolPlace",
-                            e.target.value
-                          )
-                        }
-                        required
-                        disabled={member.age < 3 || member.age > 24}
-                      />
-                    </td>
-                    <td>
-                      <select
-                        value={member.houseLot}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "houseLot",
-                            e.target.value
-                          )
-                        }
-                        required
-                      >
-                        {houseLotOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                      {member.houseLot === "Other" && (
-                        <input
-                          type="text"
-                          placeholder="House and Lot"
-                          value={
-                            otherHouseAndLotFamMember[index]?.houseAndLot || ""
-                          }
-                          onChange={(e) =>
-                            handleOtherHouseAndLotFamMemberChange(
-                              index,
-                              "houseAndLot",
-                              e.target.value
-                            )
-                          }
-                          className="months-input"
-                        />
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        value={member.waterSupply}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "waterSupply",
-                            e.target.value
-                          )
-                        }
-                        required
-                      >
-                        {waterOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                      {member.waterSupply === "Other" && (
-                        <input
-                          type="text"
-                          placeholder="Water Supply"
-                          value={
-                            otherWaterSupplyFamMember[index]?.waterSupply || ""
-                          }
-                          onChange={(e) =>
-                            handleOtherWaterSupplyFamMemberChange(
-                              index,
-                              "waterSupply",
-                              e.target.value
-                            )
-                          }
-                          className="months-input"
-                        />
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        value={member.comfortRoom}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "comfortRoom",
-                            e.target.value
-                          )
-                        }
-                        required
-                      >
-                        {comfortRoomOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                      {member.comfortRoom === "Other" && (
-                        <input
-                          type="text"
-                          placeholder="Water Supply"
-                          value={
-                            otherComfortRoomFamMember[index]?.comfortRoom || ""
-                          }
-                          onChange={(e) =>
-                            handleOtherComfortRoomFamMemberChange(
-                              index,
-                              "comfortRoom",
-                              e.target.value
-                            )
-                          }
-                          className="months-input"
-                        />
-                      )}
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="Years in Darasa"
-                        value={member.residence}
-                        onChange={(e) =>
-                          handleFamilyMemberChange(
-                            index,
-                            "residence",
-                            e.target.value
-                          )
-                        }
-                        required
-                      />
+                              {member.religion === "Other" && (
+                                <input
+                                  type="text"
+                                  placeholder="Religion"
+                                  value={
+                                    otherReligionFamMember[index]?.religion ||
+                                    ""
+                                  }
+                                  onChange={(e) =>
+                                    handleOtherReligionFamilyMemberChange(
+                                      index,
+                                      "religion",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="months-input"
+                                />
+                              )}
+                            </td>
+                            <td>
+                              <select
+                                value={member.ethnicity}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "ethnicity",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {ethnicityOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <select
+                                value={member.voter}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "voter",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {voterOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <select
+                                value={member.hlec}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    hlec: e.target.value,
+                                  })
+                                }
+                                required
+                              >
+                                {educationLevels.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                          </tr>
+                        </tbody>
+                        <thead>
+                          <tr>
+                            <th className="education-col">
+                              SCHOOL LEVEL
+                              <br />
+                              <span className="note-text">
+                                (For ages 3-24 only)
+                              </span>
+                            </th>
+                            <th className="education-col">
+                              PLACE OF SCHOOL
+                              <br />
+                              <span className="note-text">
+                                (For ages 3-24 only)
+                              </span>
+                            </th>
+                            <th>HOUSE & LOT</th>
+                            <th>WATER SUPPLY</th>
+                            <th>COMFORT ROOM</th>
+                            <th>
+                              RESIDENCE START DATE
+                              <br />
+                              <span className="note-text">(In Darasa)</span>
+                            </th>
+                            <th>
+                              RESIDENCE YEARS
+                              <br />
+                              <span className="note-text">(In Darasa)</span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr key={index}>
+                            <td>
+                              <select
+                                value={member.schoolLevel}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "schoolLevel",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                                disabled={member.age < 3 || member.age > 24}
+                              >
+                                {educationLevels.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                value={member.schoolPlace}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "schoolPlace",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                                disabled={member.age < 3 || member.age > 24}
+                              />
+                            </td>
+                            <td>
+                              <select
+                                value={member.houseLot}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "houseLot",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {houseLotOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                              {member.houseLot === "Other" && (
+                                <input
+                                  type="text"
+                                  placeholder="House and Lot"
+                                  value={
+                                    otherHouseAndLotFamMember[index]
+                                      ?.houseAndLot || ""
+                                  }
+                                  onChange={(e) =>
+                                    handleOtherHouseAndLotFamMemberChange(
+                                      index,
+                                      "houseAndLot",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="months-input"
+                                />
+                              )}
+                            </td>
+                            <td>
+                              <select
+                                value={member.waterSupply}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "waterSupply",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {waterOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                              {member.waterSupply === "Other" && (
+                                <input
+                                  type="text"
+                                  placeholder="Water Supply"
+                                  value={
+                                    otherWaterSupplyFamMember[index]
+                                      ?.waterSupply || ""
+                                  }
+                                  onChange={(e) =>
+                                    handleOtherWaterSupplyFamMemberChange(
+                                      index,
+                                      "waterSupply",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="months-input"
+                                />
+                              )}
+                            </td>
+                            <td>
+                              <select
+                                value={member.comfortRoom}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "comfortRoom",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              >
+                                {comfortRoomOptions.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+                              {member.comfortRoom === "Other" && (
+                                <input
+                                  type="text"
+                                  placeholder="Water Supply"
+                                  value={
+                                    otherComfortRoomFamMember[index]
+                                      ?.comfortRoom || ""
+                                  }
+                                  onChange={(e) =>
+                                    handleOtherComfortRoomFamMemberChange(
+                                      index,
+                                      "comfortRoom",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="months-input"
+                                />
+                              )}
+                            </td>
+                            <td>
+                              <input
+                                type="date"
+                                value={member.residence}
+                                onChange={(e) =>
+                                  handleFamilyMemberChange(
+                                    index,
+                                    "residence",
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                placeholder="Years in Darasa"
+                                value={getResidenceYears(member.residence)}
+                                required
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </td>
                   </tr>
                 ))}
@@ -2747,61 +2913,9 @@ function FamilyForm({ onBack }) {
           {showAdditionalInfo ? (
             <div className="table-responsive">
               <table className="responsive-table">
-                <thead>
-                  <tr>
-                    <th>Action</th>
-                    <th>NAME</th>
-                    <th>PREGNANT</th>
-                    <th>FAMILY PLANNING</th>
-                    <th>
-                      PWD
-                      <br />
-                      <span className="note-text">
-                        (Specify disability or N/A)
-                      </span>
-                    </th>
-                    <th>SOLO PARENT</th>
-                    <th>
-                      SENIOR CITIZEN
-                      <br />
-                      <span className="note-text">(ID Number)</span>
-                    </th>
-                    <th>
-                      MAINTENANCE
-                      <br />
-                      <span className="note-text">(Medicine/Diagnosis)</span>
-                    </th>
-                    <th>
-                      PHILHEALTH
-                      <br />
-                      <span className="note-text">(ID Number)</span>
-                    </th>
-                    {/* <th>HOUSE & LOT</th>
-                    <th>WATER SUPPLY</th>
-                    <th>COMFORT ROOM</th> */}
-                    <th className="ofw-col">
-                      OFW COUNTRY
-                      <br />
-                      <span className="note-text">(If applicable)</span>
-                    </th>
-                    <th className="ofw-col">YEARS IN SERVICE</th>
-                    <th>
-                      OUT OF SCHOOL
-                      <br />
-                      <span className="note-text">(Grade/Level stopped)</span>
-                    </th>
-                    <th className="immigrant-col">IMMIGRANT NATIONALITY</th>
-                    <th className="immigrant-col">YEARS OF STAY</th>
-                    {/* <th>
-                      RESIDENCE YEARS
-                      <br />
-                      <span className="note-text">(In Darasa)</span>
-                    </th> */}
-                  </tr>
-                </thead>
                 <tbody>
                   {additionalInfos.map((info, index) => (
-                    <tr key={index}>
+                    <tr>
                       <td>
                         <button
                           type="button"
@@ -2812,51 +2926,85 @@ function FamilyForm({ onBack }) {
                         </button>
                       </td>
                       <td>
-                        <select
-                          value={info.name}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "name",
-                              e.target.value
-                            )
-                          }
-                          required
-                        >
-                          <option value="">Select Names</option>
+                        <table className="responsive-table">
+                          <thead>
+                            <tr>
+                              <th>NAME</th>
+                              <th>PREGNANT</th>
+                              <th>FAMILY PLANNING</th>
+                              <th>
+                                PWD
+                                <br />
+                                <span className="note-text">
+                                  (Specify disability or N/A)
+                                </span>
+                              </th>
+                              <th>SOLO PARENT</th>
+                              <th>
+                                SENIOR CITIZEN
+                                <br />
+                                <span className="note-text">(ID Number)</span>
+                              </th>
+                              <th>
+                                MAINTENANCE
+                                <br />
+                                <span className="note-text">
+                                  (Medicine/Diagnosis)
+                                </span>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr key={index}>
+                              <td>
+                                <select
+                                  value={info.name}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "name",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                >
+                                  <option value="">Select Names</option>
 
-                          {formData.headFirstName &&
-                            formData.headMiddleName &&
-                            formData.headLastName && (
-                              <option
-                                key="head"
-                                value={`${formData.headFirstName} ${formData.headMiddleName} ${formData.headLastName}`}
-                              >
-                                {`${formData.headFirstName} ${formData.headMiddleName} ${formData.headLastName}`}
-                              </option>
-                            )}
+                                  {formData.headFirstName &&
+                                    formData.headMiddleName &&
+                                    formData.headLastName && (
+                                      <option
+                                        key="head"
+                                        value={`${formData.headFirstName} ${formData.headMiddleName} ${formData.headLastName}`}
+                                      >
+                                        {`${formData.headFirstName} ${formData.headMiddleName} ${formData.headLastName}`}
+                                      </option>
+                                    )}
 
-                          {formData.spouseFirstName &&
-                            formData.spouseMiddleName &&
-                            formData.spouseLastName && (
-                              <option
-                                key="spouse"
-                                value={`${formData.spouseFirstName} ${formData.spouseMiddleName} ${formData.spouseLastName}`}
-                              >
-                                {`${formData.spouseFirstName} ${formData.spouseMiddleName} ${formData.spouseLastName}`}
-                              </option>
-                            )}
+                                  {formData.spouseFirstName &&
+                                    formData.spouseMiddleName &&
+                                    formData.spouseLastName && (
+                                      <option
+                                        key="spouse"
+                                        value={`${formData.spouseFirstName} ${formData.spouseMiddleName} ${formData.spouseLastName}`}
+                                      >
+                                        {`${formData.spouseFirstName} ${formData.spouseMiddleName} ${formData.spouseLastName}`}
+                                      </option>
+                                    )}
 
-                          {familyMembers.map((member, idx) => {
-                            const fullName = `${member.firstName} ${member.middleName} ${member.lastName}`;
-                            return (
-                              <option key={`member-${idx}`} value={fullName}>
-                                {fullName}
-                              </option>
-                            );
-                          })}
-                        </select>
-                        {/* <input
+                                  {familyMembers.map((member, idx) => {
+                                    const fullName = `${member.firstName} ${member.middleName} ${member.lastName}`;
+                                    return (
+                                      <option
+                                        key={`member-${idx}`}
+                                        value={fullName}
+                                      >
+                                        {fullName}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
+                                {/* <input
                           type="text"
                           value={info.name}
                           onChange={(e) =>
@@ -2868,310 +3016,270 @@ function FamilyForm({ onBack }) {
                           }
                           required
                         /> */}
+                              </td>
+                              <td className="pregnant-cell">
+                                <select
+                                  value={info.pregnant}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "pregnant",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                >
+                                  {yesNoOptions.map((option) => (
+                                    <option key={option} value={option}>
+                                      {option}
+                                    </option>
+                                  ))}
+                                </select>
+                                {info.pregnant === "Yes" && (
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="[1-9]"
+                                    min="1"
+                                    max="9"
+                                    placeholder="Months"
+                                    value={info.pregnantMonths || ""}
+                                    onChange={(e) =>
+                                      handleAdditionalInfoChange(
+                                        index,
+                                        "pregnantMonths",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="months-input"
+                                  />
+                                )}
+                              </td>
+                              <td>
+                                <select
+                                  value={info.familyPlanning}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "familyPlanning",
+                                      e.target.value
+                                    )
+                                  }
+                                  disabled={info.pregnant === "Yes"}
+                                >
+                                  {info.pregnant !== "Yes" &&
+                                    familyPlanningOptions.map((option) => (
+                                      <option key={option} value={option}>
+                                        {option}
+                                      </option>
+                                    ))}
+                                </select>
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="Specify or N/A"
+                                  value={info.pwd}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "pwd",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                />
+                              </td>
+                              <td>
+                                <select
+                                  value={info.soloParent}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "soloParent",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                >
+                                  {yesNoOptions.map((option) => (
+                                    <option key={option} value={option}>
+                                      {option}
+                                    </option>
+                                  ))}
+                                </select>
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  // inputMode="numeric"
+                                  // pattern="[0-9]*"
+                                  placeholder="ID Number"
+                                  value={info.seniorCitizen}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "seniorCitizen",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="Medicine/Diagnosis"
+                                  value={info.maintenance}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "maintenance",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                          <thead>
+                            <tr>
+                              <th>
+                                PHILHEALTH
+                                <br />
+                                <span className="note-text">(ID Number)</span>
+                              </th>
+                              <th className="ofw-col">
+                                OFW COUNTRY
+                                <br />
+                                <span className="note-text">
+                                  (If applicable)
+                                </span>
+                              </th>
+                              <th className="ofw-col">YEARS IN SERVICE</th>
+                              <th>
+                                OUT OF SCHOOL
+                                <br />
+                                <span className="note-text">
+                                  (Grade/Level stopped)
+                                </span>
+                              </th>
+                              <th className="immigrant-col">
+                                IMMIGRANT NATIONALITY
+                              </th>
+                              <th className="immigrant-col" colSpan={2}>YEARS OF STAY</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr key={index}>
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="ID Number"
+                                  value={info.philhealth}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "philhealth",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="Country name"
+                                  value={info.ofwCountry}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "ofwCountry",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  placeholder="Years"
+                                  value={info.ofwYears}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "ofwYears",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="Grade/Level stopped"
+                                  value={info.dropout}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "dropout",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                />
+                              </td>
+                              <td>
+                                <select
+                                  value={info.immigrantNationality}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "immigrantNationality",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                >
+                                  <option value="Not an immigrant">
+                                    Not an immigrant
+                                  </option>
+                                  {nationalityOptions.map((option) =>
+                                    option ? (
+                                      <option key={option} value={option}>
+                                        {option}
+                                      </option>
+                                    ) : null
+                                  )}
+                                </select>
+                              </td>
+                              <td colSpan={2}>
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  placeholder="Years"
+                                  value={info.immigrantStay}
+                                  onChange={(e) =>
+                                    handleAdditionalInfoChange(
+                                      index,
+                                      "immigrantStay",
+                                      e.target.value
+                                    )
+                                  }
+                                  required
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </td>
-                      <td className="pregnant-cell">
-                        <select
-                          value={info.pregnant}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "pregnant",
-                              e.target.value
-                            )
-                          }
-                          required
-                        >
-                          {yesNoOptions.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                        {info.pregnant === "Yes" && (
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[1-9]"
-                            min="1"
-                            max="9"
-                            placeholder="Months"
-                            value={info.pregnantMonths || ""}
-                            onChange={(e) =>
-                              handleAdditionalInfoChange(
-                                index,
-                                "pregnantMonths",
-                                e.target.value
-                              )
-                            }
-                            className="months-input"
-                          />
-                        )}
-                      </td>
-                      <td>
-                        <select
-                          value={info.familyPlanning}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "familyPlanning",
-                              e.target.value
-                            )
-                          }
-                          disabled={info.pregnant === "Yes"}
-                        >
-                          {info.pregnant !== "Yes" &&
-                            familyPlanningOptions.map((option) => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                        </select>
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          placeholder="Specify or N/A"
-                          value={info.pwd}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "pwd",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </td>
-                      <td>
-                        <select
-                          value={info.soloParent}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "soloParent",
-                              e.target.value
-                            )
-                          }
-                          required
-                        >
-                          {yesNoOptions.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          // inputMode="numeric"
-                          // pattern="[0-9]*"
-                          placeholder="ID Number"
-                          value={info.seniorCitizen}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "seniorCitizen",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          placeholder="Medicine/Diagnosis"
-                          value={info.maintenance}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "maintenance",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          // inputMode="numeric"
-                          // pattern="[0-9]*"
-                          placeholder="ID Number"
-                          value={info.philhealth}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "philhealth",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </td>
-                      {/* <td>
-                        <select
-                          value={info.houseLot}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "houseLot",
-                              e.target.value
-                            )
-                          }
-                          required
-                        >
-                          {houseLotOptions.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td>
-                        <select
-                          value={info.waterSupply}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "waterSupply",
-                              e.target.value
-                            )
-                          }
-                          required
-                        >
-                          {waterOptions.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td>
-                        <select
-                          value={info.comfortRoom}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "comfortRoom",
-                              e.target.value
-                            )
-                          }
-                          required
-                        >
-                          {comfortRoomOptions.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </td> */}
-                      <td>
-                        <input
-                          type="text"
-                          placeholder="Country name"
-                          value={info.ofwCountry}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "ofwCountry",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          placeholder="Years"
-                          value={info.ofwYears}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "ofwYears",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          placeholder="Grade/Level stopped"
-                          value={info.dropout}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "dropout",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </td>
-                      <td>
-                        <select
-                          value={info.immigrantNationality}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "immigrantNationality",
-                              e.target.value
-                            )
-                          }
-                          required
-                        >
-                          <option value="Not an immigrant">
-                            Not an immigrant
-                          </option>
-                          {nationalityOptions.map((option) =>
-                            option ? (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ) : null
-                          )}
-                        </select>
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          placeholder="Years"
-                          value={info.immigrantStay}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "immigrantStay",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </td>
-                      {/* <td>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          placeholder="Years in Darasa"
-                          value={info.residence}
-                          onChange={(e) =>
-                            handleAdditionalInfoChange(
-                              index,
-                              "residence",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      </td> */}
                     </tr>
                   ))}
                 </tbody>

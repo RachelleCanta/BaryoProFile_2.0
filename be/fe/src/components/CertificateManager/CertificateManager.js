@@ -14,7 +14,7 @@ import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import { saveAs } from "file-saver";
 
-const CertificateManager = () => {
+const CertificateManager = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [downloadStatus, setDownloadStatus] = useState({
     loading: false,
@@ -3076,6 +3076,10 @@ const CertificateManager = () => {
 
   return (
     <div className="certificate-manager-container">
+      <button onClick={onBack} className="back-btn">
+        Back to Menu
+      </button>
+
       <header className="certificate-header">
         <h1>Certificate Management</h1>
         <p>Download and manage official barangay certificates and documents</p>

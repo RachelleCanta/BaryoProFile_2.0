@@ -35,7 +35,8 @@ const ResidentSchema = new mongoose.Schema(
     headHouseLot: { type: String, default: "" },
     headWaterSupply: { type: String, default: "" },
     headComfortRoom: { type: String, default: "" },
-    headResidence: { type: Number, default: "" },
+    // headResidence: { type: Number, default: "" },
+    headResidence: { type: Date, default: "" },
 
     // Spouse Information
     spouseFirstName: { type: String },
@@ -58,7 +59,8 @@ const ResidentSchema = new mongoose.Schema(
     spouseHouseLot: { type: String, default: "" },
     spouseWaterSupply: { type: String, default: "" },
     spouseComfortRoom: { type: String, default: "" },
-    spouseResidence: { type: Number, default: "" },
+    // spouseResidence: { type: Number, default: "" },
+    spouseResidence: { type: Date, default: "" },
 
     // Family Members (Array of Objects)
     familyMembers: [
@@ -87,7 +89,8 @@ const ResidentSchema = new mongoose.Schema(
         houseLot: { type: String, default: "" },
         waterSupply: { type: String, default: "" },
         comfortRoom: { type: String, default: "" },
-        residence: { type: Number, default: "" },
+        // residence: { type: Number, default: "" },
+        residence: { type: Date, default: "" },
       },
     ],
 

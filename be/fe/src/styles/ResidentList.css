@@ -10,8 +10,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Main Container */
@@ -27,6 +31,18 @@
 /* List Header */
 .list-header {
   margin-bottom: 1.5rem;
+}
+
+.list-header > div:nth-child(1) {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-header > div:nth-child(1) > button:nth-child(2) {
+  max-width: fit-content !important;
 }
 
 .list-header h2 {
@@ -124,12 +140,12 @@
 
 .member-details {
   display: flex;
-  flex-flow:row wrap;
+  flex-flow: row wrap;
   gap: 0.75rem;
   color: #6b7280;
   font-size: 0.95rem;
   align-items: center;
-  margin-bottom:1rem;
+  margin-bottom: 1rem;
 }
 
 /* Filtered Members */

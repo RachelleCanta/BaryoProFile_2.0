@@ -613,7 +613,7 @@ function ResidentForm({ onBack, onSave }) {
           head: resident.headReligion,
         }));
       }
-      
+
       if (!houseLotOptions.includes(resident.headHouseLot)) {
         setOtherHouseAndLot((prev) => ({
           ...prev,
@@ -634,7 +634,7 @@ function ResidentForm({ onBack, onSave }) {
           head: resident.headComfortRoom,
         }));
       }
-      
+
       // * SPOUSE
       if (!religionOptions.includes(resident.spouseReligion)) {
         setOtherReligion((prev) => ({
@@ -643,26 +643,26 @@ function ResidentForm({ onBack, onSave }) {
         }));
       }
 
-       if (!houseLotOptions.includes(resident.spouseHouseLot)) {
-         setOtherHouseAndLot((prev) => ({
-           ...prev,
-           spouse: resident.spouseHouseLot,
-         }));
-       }
+      if (!houseLotOptions.includes(resident.spouseHouseLot)) {
+        setOtherHouseAndLot((prev) => ({
+          ...prev,
+          spouse: resident.spouseHouseLot,
+        }));
+      }
 
-       if (!waterOptions.includes(resident.spouseWaterSupply)) {
-         setOtherWaterSupply((prev) => ({
-           ...prev,
-           spouse: resident.spouseWaterSupply,
-         }));
-       }
+      if (!waterOptions.includes(resident.spouseWaterSupply)) {
+        setOtherWaterSupply((prev) => ({
+          ...prev,
+          spouse: resident.spouseWaterSupply,
+        }));
+      }
 
-       if (!comfortRoomOptions.includes(resident.spouseComfortRoom)) {
-         setOtherComfortRoom((prev) => ({
-           ...prev,
-           spouse: resident.spouseComfortRoom,
-         }));
-       }
+      if (!comfortRoomOptions.includes(resident.spouseComfortRoom)) {
+        setOtherComfortRoom((prev) => ({
+          ...prev,
+          spouse: resident.spouseComfortRoom,
+        }));
+      }
 
       console.log("Transformed resident data:", resident);
 
@@ -691,7 +691,9 @@ function ResidentForm({ onBack, onSave }) {
         spouseWaterSupply: !waterOptions.includes(resident.spouseWaterSupply)
           ? "Other"
           : resident.spouseWaterSupply,
-        spouseComfortRoom: !comfortRoomOptions.includes(resident.spouseComfortRoom)
+        spouseComfortRoom: !comfortRoomOptions.includes(
+          resident.spouseComfortRoom
+        )
           ? "Other"
           : resident.spouseComfortRoom,
         additionalInfos: resident.additionalInfos, // Ensure array is copied
@@ -1017,7 +1019,7 @@ function ResidentForm({ onBack, onSave }) {
           houseLot: "",
           waterSupply: "",
           comfortRoom: "",
-          residence: "",
+          residence: 0,
         },
       ],
     }));
@@ -1131,6 +1133,34 @@ function ResidentForm({ onBack, onSave }) {
 
     updated[index][field] = value;
     setOtherRelationshipFamMember(updated);
+  };
+
+  const getResidenceYears = (selectedDate) => {
+    const today = new Date();
+    const date = new Date(selectedDate);
+    let computed = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+    const dayDiff = today.getDate() - date.getDate();
+
+    // Check if date is valid
+    if (
+      isNaN(date.getTime()) ||
+      selectedDate === "" ||
+      selectedDate === 0 ||
+      Number.isInteger(selectedDate)
+    ) {
+      return 0;
+    }
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      computed--;
+    }
+
+    if (computed <= 0) {
+      computed = 0;
+    }
+
+    return computed;
   };
 
   return (
@@ -1524,13 +1554,21 @@ function ResidentForm({ onBack, onSave }) {
               )}
             </div>
             <div className="form-group" style={styles.formGroup}>
+              <label>Residence Start Date:</label>
+              <input
+                type="date"
+                name="headResidence"
+                value={formatDateForInput(formData.headResidence)}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group" style={styles.formGroup}>
               <label>Residence Years:</label>
               <input
                 min={0}
+                disabled
                 type="number"
-                name="headResidence"
-                value={formData.headResidence}
-                onChange={handleChange}
+                value={getResidenceYears(formData.headResidence)}
               />
             </div>
           </div>
@@ -1836,13 +1874,21 @@ function ResidentForm({ onBack, onSave }) {
               )}
             </div>
             <div className="form-group" style={styles.formGroup}>
+              <label>Residence Start Date:</label>
+              <input
+                type="date"
+                name="spouseResidence"
+                value={formatDateForInput(formData.spouseResidence)}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group" style={styles.formGroup}>
               <label>Residence Years:</label>
               <input
                 min={0}
+                disabled
                 type="number"
-                name="spouseResidence"
-                value={formData.spouseResidence}
-                onChange={handleChange}
+                value={getResidenceYears(formData.spouseResidence)}
               />
             </div>
           </div>
@@ -2302,19 +2348,27 @@ function ResidentForm({ onBack, onSave }) {
                   )}
                 </div>
                 <div className="form-group" style={styles.formGroup}>
-                  <label>Residence Years:</label>
+                  <label>Residence Start Date:</label>
                   <input
-                    min={0}
-                    type="number"
+                    type="date"
                     name="residence"
-                    value={member.residence}
-                    onChange={(e) => {
+                    value={formatDateForInput(member.residence)}
+                    onChange={(e) =>
                       handleFamilyMemberChange(
                         index,
                         "residence",
                         e.target.value
-                      );
-                    }}
+                      )
+                    }
+                  />
+                </div>
+                <div className="form-group" style={styles.formGroup}>
+                  <label>Residence Years:</label>
+                  <input
+                    min={0}
+                    type="number"
+                    disabled
+                    value={getResidenceYears(member.residence)}
                   />
                 </div>
               </div>

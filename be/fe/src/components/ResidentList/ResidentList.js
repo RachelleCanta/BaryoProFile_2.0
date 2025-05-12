@@ -598,11 +598,17 @@ function ResidentList({ onBack, onEditClick }) {
 
       <div className="list-container">
         <div className="list-header">
-          <h2>
-            {currentUser.role !== "user"
-              ? "Resident's List"
-              : "Your Information"}
-          </h2>
+          <div>
+            <h2>
+              {currentUser.role !== "user"
+                ? "Resident's List"
+                : "Your Information"}
+            </h2>
+            <button onClick={onBack} className="back-btn">
+              Back to Menu
+            </button>
+          </div>
+
           {currentUser.role !== "user" && (
             <div className="search-filter-container">
               <input

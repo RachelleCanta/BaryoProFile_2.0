@@ -17,6 +17,7 @@ import { ACTIONS } from "../utils/auditLogger";
 import { toast } from "react-toastify";
 import { MAIN_API_LINK } from "../utils/API";
 import { useEffect } from "react";
+import AutoLogout from "../AutoLogout";
 
 function Dashboard({ currentUser, onLogout }) {
   const [activeView, setActiveView] = useState("welcome");
@@ -200,7 +201,7 @@ function Dashboard({ currentUser, onLogout }) {
       case "userManagement":
         return <UserManagement onBack={() => setActiveView("welcome")} />;
       case "reports":
-        return <AnalyticsDashboard />;
+        return <AnalyticsDashboard onBack={() => setActiveView("welcome")} />;
       case "auditLog":
         return <SystemLogs onBack={() => setActiveView("welcome")} />;
       default:
@@ -221,161 +222,170 @@ function Dashboard({ currentUser, onLogout }) {
   };
 
   return (
-    <div className="menu-container">
-      <div className="dashboard-navbar">
-        {showTopBar && (
-          <div className="navbar-brand">
-            <img
-              src="/images/system-logo.png"
-              alt="System Logo"
-              className="navbar-logo"
-              style={{ height: "80px", marginRight: "20px" }}
-            />
-            <span>Profiling System</span>
-          </div>
-        )}
-        {showTopBar && (
-          <>
-            <div className="navbar-actions">
-              <div className="user-info">
-                <i className="fas fa-user-circle"></i>
-                <span>{currentUser.username}</span>
-              </div>
-              <button onClick={onLogout} className="logout-btn">
-                <i className="fas fa-sign-out-alt"></i>
-                Logout
-              </button>
-              <button
-                className="top-bar"
-                onClick={() => setShowTopBar((prev) => !prev)}
-              >
-                |||
-              </button>
+    <>
+      <AutoLogout />
+      <div className="menu-container">
+        <div className="dashboard-navbar">
+          {showTopBar && (
+            <div className="navbar-brand">
+              <a href="/">
+                <img
+                  src="/images/system-logo.png"
+                  alt="System Logo"
+                  className="navbar-logo"
+                  style={{ height: "80px", marginRight: "20px" }}
+                />
+              </a>
+              <span>Profiling System</span>
             </div>
-          </>
-        )}
-        {!showTopBar && (
-          <button
-            className="top-bar"
-            onClick={() => setShowTopBar((prev) => !prev)}
-          >
-            |||
-          </button>
-        )}
-      </div>
-
-      <div className="dashboard-content">
-        <button
-          className={`sidebar-toggle ${isSidebarCollapsed ? "collapsed" : ""}`}
-          onClick={toggleSidebar}
-        >
-          <i
-            className={`fas fa-chevron-${
-              isSidebarCollapsed ? "right" : "left"
-            }`}
-          ></i>
-        </button>
-
-        <div
-          className={`dashboard-sidebar ${
-            isSidebarCollapsed ? "collapsed" : ""
-          }`}
-        >
-          <div className="sidebar-section">
-            <img
-              src="/images/darasa-logo.png"
-              alt="barangay Logo"
-              className="sidebar-logo"
-            />
-            <h3>Main Menu</h3>
-            {checkPermission(currentUser, PERMISSIONS.ADD) && (
-              <button
-                onClick={() => handleViewChange("input", PERMISSIONS.ADD)}
-                className={`sidebar-btn ${
-                  activeView === "input" ? "active" : ""
-                }`}
-              >
-                <i className="fas fa-user-plus"></i>
-                Add Resident
-              </button>
-            )}
-            {(checkPermission(currentUser, PERMISSIONS.MANAGE) ||
-              checkPermission(currentUser, PERMISSIONS.VIEW)) && (
-              <button
-                onClick={() => handleViewChange("list", PERMISSIONS.MANAGE)}
-                className={`sidebar-btn ${
-                  activeView === "list" ? "active" : ""
-                }`}
-              >
-                <i className="fas fa-list"></i>
-                {currentUser.role === "user"
-                  ? "Your Information"
-                  : "Resident List"}
-              </button>
-            )}
-            {checkPermission(currentUser, PERMISSIONS.REPORTS) && (
-              <button
-                onClick={() => handleViewChange("reports", PERMISSIONS.REPORTS)}
-                className={`sidebar-btn ${
-                  activeView === "reports" ? "active" : ""
-                }`}
-              >
-                <i className="fas fa-chart-line"></i>
-                Reports
-              </button>
-            )}
-            {checkPermission(currentUser, PERMISSIONS.CERTIFICATES) && (
-              <button
-                onClick={() =>
-                  handleViewChange("certificates", PERMISSIONS.CERTIFICATES)
-                }
-                className={`sidebar-btn ${
-                  activeView === "certificates" ? "active" : ""
-                }`}
-              >
-                <i className="fas fa-file-alt"></i>
-                Barangay Certificates
-              </button>
-            )}
-
-            {currentUser.role === "systemadmin" && (
-              <div className="admin-controls">
-                <h3>Admin Controls</h3>
-                <button
-                  onClick={() => handleViewChange("userManagement")}
-                  className={`sidebar-btn admin-only ${
-                    activeView === "userManagement" ? "active" : ""
-                  }`}
-                >
-                  <i className="fas fa-users-cog"></i>
-                  Users
+          )}
+          {showTopBar && (
+            <>
+              <div className="navbar-actions">
+                <div className="user-info">
+                  <i className="fas fa-user-circle"></i>
+                  <span>{currentUser.username}</span>
+                </div>
+                <button onClick={onLogout} className="logout-btn">
+                  <i className="fas fa-sign-out-alt"></i>
+                  Logout
                 </button>
                 <button
-                  onClick={() => handleViewChange("auditLog")}
-                  className={`sidebar-btn admin-only ${
-                    activeView === "auditLog" ? "active" : ""
-                  }`}
+                  className="top-bar"
+                  onClick={() => setShowTopBar((prev) => !prev)}
                 >
-                  <i className="fas fa-history"></i>
-                  Activity Log
+                  |||
                 </button>
               </div>
-            )}
+            </>
+          )}
+          {!showTopBar && (
+            <button
+              className="top-bar"
+              onClick={() => setShowTopBar((prev) => !prev)}
+            >
+              |||
+            </button>
+          )}
+        </div>
+
+        <div className="dashboard-content">
+          <button
+            className={`sidebar-toggle ${
+              isSidebarCollapsed ? "collapsed" : ""
+            }`}
+            onClick={toggleSidebar}
+          >
+            <i
+              className={`fas fa-chevron-${
+                isSidebarCollapsed ? "right" : "left"
+              }`}
+            ></i>
+          </button>
+
+          <div
+            className={`dashboard-sidebar ${
+              isSidebarCollapsed ? "collapsed" : ""
+            }`}
+          >
+            <div className="sidebar-section">
+              <img
+                src="/images/darasa-logo.png"
+                alt="barangay Logo"
+                className="sidebar-logo"
+              />
+              <h3>Main Menu</h3>
+              {checkPermission(currentUser, PERMISSIONS.ADD) && (
+                <button
+                  onClick={() => handleViewChange("input", PERMISSIONS.ADD)}
+                  className={`sidebar-btn ${
+                    activeView === "input" ? "active" : ""
+                  }`}
+                >
+                  <i className="fas fa-user-plus"></i>
+                  Add Resident
+                </button>
+              )}
+              {(checkPermission(currentUser, PERMISSIONS.MANAGE) ||
+                checkPermission(currentUser, PERMISSIONS.VIEW)) && (
+                <button
+                  onClick={() => handleViewChange("list", PERMISSIONS.MANAGE)}
+                  className={`sidebar-btn ${
+                    activeView === "list" ? "active" : ""
+                  }`}
+                >
+                  <i className="fas fa-list"></i>
+                  {currentUser.role === "user"
+                    ? "Your Information"
+                    : "Resident List"}
+                </button>
+              )}
+              {checkPermission(currentUser, PERMISSIONS.REPORTS) && (
+                <button
+                  onClick={() =>
+                    handleViewChange("reports", PERMISSIONS.REPORTS)
+                  }
+                  className={`sidebar-btn ${
+                    activeView === "reports" ? "active" : ""
+                  }`}
+                >
+                  <i className="fas fa-chart-line"></i>
+                  Reports
+                </button>
+              )}
+              {checkPermission(currentUser, PERMISSIONS.CERTIFICATES) && (
+                <button
+                  onClick={() =>
+                    handleViewChange("certificates", PERMISSIONS.CERTIFICATES)
+                  }
+                  className={`sidebar-btn ${
+                    activeView === "certificates" ? "active" : ""
+                  }`}
+                >
+                  <i className="fas fa-file-alt"></i>
+                  Barangay Certificates
+                </button>
+              )}
+
+              {currentUser.role === "systemadmin" && (
+                <div className="admin-controls">
+                  <h3>Admin Controls</h3>
+                  <button
+                    onClick={() => handleViewChange("userManagement")}
+                    className={`sidebar-btn admin-only ${
+                      activeView === "userManagement" ? "active" : ""
+                    }`}
+                  >
+                    <i className="fas fa-users-cog"></i>
+                    Users
+                  </button>
+                  <button
+                    onClick={() => handleViewChange("auditLog")}
+                    className={`sidebar-btn admin-only ${
+                      activeView === "auditLog" ? "active" : ""
+                    }`}
+                  >
+                    <i className="fas fa-history"></i>
+                    Activity Log
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div
+            className={`dashboard-main ${isSidebarCollapsed ? "expanded" : ""}`}
+          >
+            {renderContent()}
           </div>
         </div>
 
-        <div
-          className={`dashboard-main ${isSidebarCollapsed ? "expanded" : ""}`}
-        >
-          {renderContent()}
-        </div>
+        <PermissionErrorModal
+          show={showErrorModal}
+          onClose={() => setShowErrorModal(false)}
+        />
       </div>
-
-      <PermissionErrorModal
-        show={showErrorModal}
-        onClose={() => setShowErrorModal(false)}
-      />
-    </div>
+    </>
   );
 }
 
