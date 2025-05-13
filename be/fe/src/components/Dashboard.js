@@ -29,20 +29,20 @@ function Dashboard({ currentUser, onLogout }) {
   const [width, setWidth] = useState(window.innerWidth);
   const [showTopBar, setShowTopBar] = useState(true);
 
-  useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth);
+  // useEffect(() => {
+  //   const handleResize = () => setWidth(window.innerWidth);
 
-    if (window.innerWidth <= 700) {
-      setShowTopBar(false);
-    } else {
-      setShowTopBar(true);
-    }
+  //   if (window.innerWidth <= 700) {
+  //     setShowTopBar(false);
+  //   } else {
+  //     setShowTopBar(true);
+  //   }
 
-    console.log(window.innerWidth);
+  //   console.log(window.innerWidth);
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [width]);
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, [width]);
 
   const handlePermissionError = () => {
     setShowErrorModal(true);
@@ -250,23 +250,23 @@ function Dashboard({ currentUser, onLogout }) {
                   <i className="fas fa-sign-out-alt"></i>
                   Logout
                 </button>
-                <button
+                {/* <button
                   className="top-bar"
                   onClick={() => setShowTopBar((prev) => !prev)}
                 >
                   |||
-                </button>
+                </button> */}
               </div>
             </>
           )}
-          {!showTopBar && (
+          {/* {!showTopBar && (
             <button
               className="top-bar"
               onClick={() => setShowTopBar((prev) => !prev)}
             >
               |||
             </button>
-          )}
+          )} */}
         </div>
 
         <div className="dashboard-content">

@@ -1031,11 +1031,63 @@ const AnalyticsDashboard = ({ onBack }) => {
                               formatter={(value) => [value, "Population"]}
                             />
                             {/* <Legend /> */}
-                            <Bar dataKey="value" fill="#8884d8">
+                            <Bar
+                              dataKey="value"
+                              fill="#8884d8"
+                              label={{ position: "top" }}
+                            >
                               {ageData.map((entry, index) => (
                                 <Cell
                                   key={`cell-${index}`}
                                   fill={COLORS[index % COLORS.length]}
+                                />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <NoDataMessage />
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {(graphFilter === "special" || graphFilter === "all") && (
+                  <div className="chart-container">
+                    <h3 className="chart-title">
+                      Special Sectors Distribution
+                    </h3>
+                    <div className="chart-content">
+                      {specialSectorsData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={400}>
+                          <BarChart
+                            data={specialSectorsData}
+                            margin={{
+                              top: 20,
+                              right: 30,
+                              left: 20,
+                              bottom: 5,
+                            }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="Category" />
+                            <YAxis />
+                            <Tooltip
+                              formatter={(value) => [`${value} residents`, ""]}
+                            />
+                            {/* <Legend /> */}
+                            <Bar
+                              dataKey="Count"
+                              radius={[4, 4, 0, 0]}
+                              label={{
+                                position: "top",
+                                formatter: (value) => value,
+                              }}
+                            >
+                              {specialSectorsData.map((entry, index) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={COLORSSPEC[index % COLORSSPEC.length]}
                                 />
                               ))}
                             </Bar>
@@ -1093,57 +1145,6 @@ const AnalyticsDashboard = ({ onBack }) => {
                       )}
                     </div>
                   </div> */}
-
-                  {(graphFilter === "special" || graphFilter === "all") && (
-                    <div className="chart-container">
-                      <h3 className="chart-title">
-                        Special Sectors Distribution
-                      </h3>
-                      <div className="chart-content">
-                        {specialSectorsData.length > 0 ? (
-                          <ResponsiveContainer width="100%" height={400}>
-                            <BarChart
-                              data={specialSectorsData}
-                              margin={{
-                                top: 20,
-                                right: 30,
-                                left: 20,
-                                bottom: 5,
-                              }}
-                            >
-                              <CartesianGrid strokeDasharray="3 3" />
-                              <XAxis dataKey="Category" />
-                              <YAxis />
-                              <Tooltip
-                                formatter={(value) => [
-                                  `${value} residents`,
-                                  "",
-                                ]}
-                              />
-                              {/* <Legend /> */}
-                              <Bar
-                                dataKey="Count"
-                                radius={[4, 4, 0, 0]}
-                                label={{
-                                  position: "top",
-                                  formatter: (value) => value,
-                                }}
-                              >
-                                {specialSectorsData.map((entry, index) => (
-                                  <Cell
-                                    key={`cell-${index}`}
-                                    fill={COLORSSPEC[index % COLORSSPEC.length]}
-                                  />
-                                ))}
-                              </Bar>
-                            </BarChart>
-                          </ResponsiveContainer>
-                        ) : (
-                          <NoDataMessage />
-                        )}
-                      </div>
-                    </div>
-                  )}
 
                   {/* <div className="chart-container">
                     <h3 className="chart-title">Population By Sex</h3>
@@ -1241,7 +1242,7 @@ const AnalyticsDashboard = ({ onBack }) => {
                             <XAxis dataKey="Certificate" />
                             <YAxis />
                             <Tooltip />
-                            <Bar dataKey="Count">
+                            <Bar dataKey="Count" label={{ position: "top" }}>
                               {certSumData.map((entry, index) => (
                                 <Cell
                                   key={`cell-${index}`}

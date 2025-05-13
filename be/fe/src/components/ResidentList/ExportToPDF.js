@@ -27,32 +27,70 @@ const ExportToExcel = ({
     today.getMonth() + 1
   }/${today.getDate()}/${today.getFullYear()}`;
 
+  // const getResidenceYears = (selectedDate) => {
+  //   const today = new Date();
+  //   const date = new Date(selectedDate);
+  //   let computed = today.getFullYear() - date.getFullYear();
+  //   const monthDiff = today.getMonth() - date.getMonth();
+  //   const dayDiff = today.getDate() - date.getDate();
+
+  //   // Check if date is valid
+  //   if (
+  //     isNaN(date.getTime()) ||
+  //     selectedDate === "" ||
+  //     selectedDate === 0 ||
+  //     Number.isInteger(selectedDate)
+  //   ) {
+  //     return 0;
+  //   }
+
+  //   if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+  //     computed--;
+  //   }
+
+  //   if (computed <= 0) {
+  //     computed = 0;
+  //   }
+
+  //   return computed;
+  // };
+
   const getResidenceYears = (selectedDate) => {
     const today = new Date();
     const date = new Date(selectedDate);
-    let computed = today.getFullYear() - date.getFullYear();
-    const monthDiff = today.getMonth() - date.getMonth();
-    const dayDiff = today.getDate() - date.getDate();
 
-    // Check if date is valid
+    // Validate the date
     if (
       isNaN(date.getTime()) ||
       selectedDate === "" ||
       selectedDate === 0 ||
       Number.isInteger(selectedDate)
     ) {
-      return 0;
+      return "0 years and 0 months";
     }
 
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-      computed--;
+    let years = today.getFullYear() - date.getFullYear();
+    let months = today.getMonth() - date.getMonth();
+    let days = today.getDate() - date.getDate();
+
+    if (days < 0) {
+      months -= 1;
     }
 
-    if (computed <= 0) {
-      computed = 0;
+    if (months < 0) {
+      years -= 1;
+      months += 12;
     }
 
-    return computed;
+    if (years < 0) {
+      years = 0;
+      months = 0;
+    }
+
+    const yearStr = `${years} year${years === 1 ? "" : "s"}`;
+    const monthStr = `${months} month${months === 1 ? "" : "s"}`;
+
+    return `${yearStr} and ${monthStr}`;
   };
 
   async function fetchAndAppendResidentData(fileUrl, residents) {

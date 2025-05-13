@@ -1,4 +1,5 @@
 import { AuditLog } from "../models/systemLogModel.js";
+import { User } from "../models/userModel.js";
 
 const getSystemLog = async (req, res) => {
   try {
@@ -15,16 +16,43 @@ const getSystemLog = async (req, res) => {
   }
 };
 
+// const getSystemLogs = async (req, res) => {
+//   try {
+//     const logs = await AuditLog.find()
+//       .populate("user", "username email")
+//       .sort({ timestamp: -1 });
+//     res.status(200).json(logs);
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
 const getSystemLogs = async (req, res) => {
   try {
-    const logs = await AuditLog.find()
+    const { username } = req.query;
+
+    let query = {};
+    console.log(username);
+    if (username) {
+      const user = await User.findOne({ username });
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      query.user = user._id;
+    }
+
+    const logs = await AuditLog.find(query)
       .populate("user", "username email")
       .sort({ timestamp: -1 });
+
     res.status(200).json(logs);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 const createSystemLog = async (req, res) => {
   try {
