@@ -762,13 +762,22 @@ const AnalyticsDashboard = ({ onBack }) => {
     );
   };
 
+  // const COLORS = [
+  //   "#4C51BF",
+  //   "#48BB78",
+  //   "#4299E1",
+  //   "#ED8936",
+  //   "#9F7AEA",
+  //   "#ED64A6",
+  // ];
+
   const COLORS = [
-    "#4C51BF",
-    "#48BB78",
-    "#4299E1",
-    "#ED8936",
-    "#9F7AEA",
-    "#ED64A6",
+    "#03045E",
+    "#023E8A",
+    "#0077B6",
+    "#0096C7",
+    "#00B4D8",
+    "#48CAE4",
   ];
 
   const NoDataMessage = () => (
@@ -846,31 +855,56 @@ const AnalyticsDashboard = ({ onBack }) => {
     value: currentYear - i,
   }));
 
-  const COLORSSPEC = ["#4299E1", "#48BB78", "#ED8936", "#F56565", "#9F7AEA"];
+  // const COLORSSPEC = ["#4299E1", "#48BB78", "#ED8936", "#F56565", "#9F7AEA"];
+  const COLORSSPEC = ["#0077B6", "#0096C7", "#00B4D8", "#48CAE4", "#90E0EF"];
+
+  // const certificateColors = [
+  //   "#4299E1", // Barangay Clearance
+  //   "#48BB78", // Certificate of Residency
+  //   "#38B2AC", // Certification of Residency
+  //   "#ED8936", // Certificate of Appearance
+  //   "#F56565", // Certificate of Good Moral
+  //   "#9F7AEA", // Barangay Certification
+  //   "#ECC94B", // Barangay Health Certification
+  //   "#A0AEC0", // Certification of Mortuary
+  //   "#F6AD55", // Permit to Travel
+  //   "#FC8181", // Certification of Business Closure
+  //   "#68D391", // Certificate of Indigency
+  //   "#63B3ED", // Certificate of No Income
+  //   "#B794F4", // Certificate of Income
+  //   "#F687B3", // Libreng Tulong Hatid
+  //   "#4FD1C5", // Certification of Late Registration
+  //   "#FBD38D", // Oath of Undertaking
+  //   "#CBD5E0", // Sworn Affidavit of the Barangay Council
+  //   "#81E6D9", // Certification of Live In Partner
+  //   "#FBB6CE", // Certification of Relationship
+  //   "#A3BFFA", // Solo Parent Certification
+  // ];
+
 
   const certificateColors = [
-    "#4299E1", // Barangay Clearance
-    "#48BB78", // Certificate of Residency
-    "#38B2AC", // Certification of Residency
-    "#ED8936", // Certificate of Appearance
-    "#F56565", // Certificate of Good Moral
-    "#9F7AEA", // Barangay Certification
-    "#ECC94B", // Barangay Health Certification
-    "#A0AEC0", // Certification of Mortuary
-    "#F6AD55", // Permit to Travel
-    "#FC8181", // Certification of Business Closure
-    "#68D391", // Certificate of Indigency
-    "#63B3ED", // Certificate of No Income
-    "#B794F4", // Certificate of Income
-    "#F687B3", // Libreng Tulong Hatid
-    "#4FD1C5", // Certification of Late Registration
-    "#FBD38D", // Oath of Undertaking
-    "#CBD5E0", // Sworn Affidavit of the Barangay Council
-    "#81E6D9", // Certification of Live In Partner
-    "#FBB6CE", // Certification of Relationship
-    "#A3BFFA", // Solo Parent Certification
+    "#0077B6", // Barangay Clearance
+    "#0096C7", // Certificate of Residency
+    "#00B4D8", // Certification of Residency
+    "#48CAE4", // Certificate of Appearance
+    "#90E0EF", // Certificate of Good Moral
+    "#ADE8F4", // Barangay Certification
+    "#CAF0F8", // Barangay Health Certification
+    "#03045E", // Certification of Mortuary
+    "#023E8A", // Permit to Travel
+    "#0077B6", // Certification of Business Closure
+    "#0096C7", // Certificate of Indigency
+    "#00B4D8", // Certificate of No Income
+    "#48CAE4", // Certificate of Income
+    "#90E0EF", // Libreng Tulong Hatid
+    "#ADE8F4", // Certification of Late Registration
+    "#CAF0F8", // Oath of Undertaking
+    "#03045E", // Sworn Affidavit of the Barangay Council
+    "#023E8A", // Certification of Live In Partner
+    "#0077B6", // Certification of Relationship
+    "#0096C7", // Solo Parent Certification
   ];
-
+  
   return (
     <div className="analytics-container">
       <button onClick={onBack} className="back-btn">
@@ -880,14 +914,14 @@ const AnalyticsDashboard = ({ onBack }) => {
         {openReportsAnalytics && (
           <>
             <div className="welcome-section">
-              <div className="brgy-logo-container">
+              {/* <div className="brgy-logo-container">
                 <img
                   src="/images/darasa-logo.png"
                   alt="Darasa Logo"
                   className="brgy-logo"
                   onError={(e) => console.error("Error loading image:", e)}
                 />
-              </div>
+              </div> */}
               <div className="title-section">
                 <h1>Barangay Darasa</h1>
                 <p>Profiling System Analytics Dashboard</p>
@@ -943,12 +977,12 @@ const AnalyticsDashboard = ({ onBack }) => {
                   onChange={handleGraphFilterChange}
                 >
                   <option value="BRGY SUMMARY">BRGY SUMMARY</option>
+                  <option value="all">All Graphs and Summary</option>
                   <option value="age">Population By Age</option>
                   <option value="sex">Population By Gender/Sex</option>
                   <option value="special">Special Distribution Sectors</option>
                   <option value="cert-graph">Certificates Graph</option>
                   <option value="cert-list">Certificates List</option>
-                  <option value="all">All Graphs and Summary</option>
                 </select>
               </div>
             </div>

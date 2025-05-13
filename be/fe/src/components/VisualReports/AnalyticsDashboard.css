@@ -119,11 +119,12 @@
 .brgy-logo-container {
   display: flex;
   justify-content: center;
+  gap:1rem;
   margin: 1rem auto;
   width: 100%;
-  max-width: 300px; /* Reduced from 600px */
+  /*max-width: 300px; /* Reduced from 600px */
   padding: 0 1rem;
-  transition: all 0.3s ease;
+  /* transition: all 0.3s ease; */
 }
 
 .brgy-logo {
