@@ -87,9 +87,9 @@
     transition: transform var(--transition-normal);
   }
   
-  .system-logo:hover {
+  /* .system-logo:hover {
     transform: translateY(-3px);
-  }
+  } */
   
   /* Enhanced content text */
   .content-text {

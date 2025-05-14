@@ -97,15 +97,15 @@ html {
   /* width: 120px; */
   /* height: auto; */
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-  transition: transform var(--transition-normal);
+  /* transition: transform var(--transition-normal); */
   border-radius: 15px;
   width: 100%;
   max-width: 45rem;
 }
 
-.system-logo:hover {
+/* .system-logo:hover {
   transform: translateY(-3px);
-}
+} */
 
 /* Enhanced content text */
 .content-text {
