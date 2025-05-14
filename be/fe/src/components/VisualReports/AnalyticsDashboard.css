@@ -218,10 +218,10 @@
   border: 1px solid #e2e8f0;
 }
 
-.summary-card:hover {
+/* .summary-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .card-title {
   font-size: 1rem;

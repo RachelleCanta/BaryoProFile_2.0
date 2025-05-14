@@ -66,9 +66,9 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-.navbar-brand:hover {
+/* .navbar-brand:hover {
   transform: translateY(-1px);
-}
+} */
 
 .navbar-actions {
   display: flex;
@@ -86,10 +86,10 @@ body {
   transition: all 0.3s ease;
 }
 
-.user-info:hover {
+/* .user-info:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
-}
+} */
 
 .user-info i {
   font-size: 1.5rem; /* Increased icon size */
@@ -495,16 +495,26 @@ body {
 }
 
 .navbar-logo {
-  height: 80px; /* Increased from 60px to 80px */
-  width: auto; /* Maintain aspect ratio */
-  object-fit: contain; /* Ensure the image fits well */
+  height: 80px;
+  width: auto;
+  object-fit: contain;
   transition: transform 0.3s ease;
   vertical-align: middle;
-  margin-right: 20px; /* Added margin */
+  margin-right: 20px;
+  /* Moderately thicker solid white outline */
+  filter: 
+    drop-shadow(1px 0 0 white) 
+    drop-shadow(-1px 0 0 white) 
+    drop-shadow(0 1px 0 white) 
+    drop-shadow(0 -1px 0 white)
+    drop-shadow(1px 1px 0 white) 
+    drop-shadow(-1px -1px 0 white) 
+    drop-shadow(1px -1px 0 white) 
+    drop-shadow(-1px 1px 0 white);
 }
 
 .navbar-logo:hover {
-  transform: scale(1.1); /* Slightly enlarge on hover */
+  transform: scale(1.1);
 }
 
 .sidebar-logo {

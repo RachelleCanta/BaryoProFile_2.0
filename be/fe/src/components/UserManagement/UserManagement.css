@@ -55,7 +55,7 @@
   overflow: hidden;
 }
 
-.back-btn::before {
+/* .back-btn::before {
   content: "";
   position: absolute;
   top: 0;
@@ -79,7 +79,7 @@
   background: linear-gradient(135deg, #475569, #334155);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+} */
 
 .add-user-btn {
   margin-bottom: 1.5rem;
@@ -109,18 +109,18 @@
     rgba(255, 255, 255, 0.3),
     transparent
   );
-  transition: 0.5s;
+  /* transition: 0.5s; */
 }
 
 .add-user-btn:hover::before {
   left: 100%;
-}
+} 
 
 .add-user-btn:hover {
   background: linear-gradient(135deg, #1d4ed8, #1e40af);
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
   box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
-}
+} 
 
 .users-table {
   width: 100%;
@@ -174,11 +174,11 @@
   transition: all 0.3s ease;
 }
 
-.users-table tbody tr:hover {
+/* .users-table tbody tr:hover {
   background-color: #f8fafc;
   transform: scale(1.01);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
+} */
 
 .actions {
   display: flex;
@@ -195,7 +195,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.3s ease-in-out;
+  /* transition: all 0.3s ease-in-out; */
   position: relative;
   overflow: hidden;
   text-align: center;
@@ -207,7 +207,7 @@
   box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
-.edit-btn::before,
+/* .edit-btn::before,
 .delete-btn::before {
   content: "";
   position: absolute;
@@ -222,18 +222,18 @@
     transparent
   );
   transition: 0.5s;
-}
+} */
 
-.edit-btn:hover::before,
+/* .edit-btn:hover::before,
 .delete-btn:hover::before {
   left: 100%;
-}
+} */
 
-.edit-btn:hover {
+/* .edit-btn:hover {
   background: linear-gradient(135deg, #1d4ed8, #1e40af);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-}
+} */
 
 .delete-btn {
   background: linear-gradient(135deg, #dc2626, #b91c1c);
@@ -241,11 +241,11 @@
   box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
 }
 
-.delete-btn:hover {
+/* .delete-btn:hover {
   background: linear-gradient(135deg, #b91c1c, #991b1b);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-}
+} */
 
 /* Enhanced Modal Styles */
 /* .modal {

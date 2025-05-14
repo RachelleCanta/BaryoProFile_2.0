@@ -171,7 +171,7 @@
   transition: transform 0.3s ease;
 }
 
-.document-item:hover {
+/* .document-item:hover {
   border-color: #2563eb;
   transform: translateX(4px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -179,7 +179,7 @@
 
 .document-item:hover::before {
   transform: scaleY(1);
-}
+} */
 
 /* Enhanced Document Icons and Details */
 .document-icon {

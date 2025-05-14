@@ -289,12 +289,12 @@
   border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  display: inline-flex;
+  /* display: inline-flex; */
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
   border: none;
-  transition: all 0.2s ease;
+  /* transition: all 0.2s ease; */
 }
 
 .export-all-indiv-button {
@@ -408,9 +408,9 @@
   background-color: #f9fafb;
 }
 
-.family-table tbody tr:hover {
+/* .family-table tbody tr:hover {
   background-color: #f3f4f6;
-}
+} */
 
 /* Set the Name column to be wider */
 .family-table th:first-child,
