@@ -209,9 +209,10 @@ function Dashboard({ currentUser, onLogout }) {
         return (
           <div className="welcome-section">
             <h1>
-              Welcome to BaryoProfile System, A Web-Based Profiling System with
-              Data Analytics for Barangay Darasa
+              Welcome to BaryoProfile System               
             </h1>
+            <strong>A Web-Based Profiling System with Data Analytics for Barangay Darasa</strong>
+            <br></br>
             <i>
               <strong>
                 "Streamlining Barangay Records for Efficient Data Management"
@@ -251,7 +252,7 @@ function Dashboard({ currentUser, onLogout }) {
                   style={{ height: "80px", marginRight: "20px" }}
                 />
               </a>
-              <span>Profiling System</span>
+              <span>Baryo Profile</span>
             </div>
           )}
           {showTopBar && (

@@ -312,13 +312,13 @@ body {
   /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06); */
   max-width: 800px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
 }
 
 .welcome-section h1 {
   font-size: 2.5rem;
   color: #1e293b;
-  margin-bottom: 1.5rem;
+  /* margin-bottom: 1.5rem; */
   font-weight: 700;
   background: linear-gradient(135deg, #1e40af, #2563eb);
   -webkit-background-clip: text;
@@ -327,7 +327,7 @@ body {
 
 .welcome-section p {
   color: #0a2146;
-  margin-bottom: 1.5rem;
+  /* margin-bottom: 1.5rem; */
   font-size: 1rem;
   line-height: 1.7;
 }

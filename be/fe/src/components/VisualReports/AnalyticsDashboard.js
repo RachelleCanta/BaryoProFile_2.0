@@ -913,7 +913,7 @@ const AnalyticsDashboard = ({ onBack }) => {
       <div className="analytics-header">
         {openReportsAnalytics && (
           <>
-            <div className="welcome-section">
+            <div className="welcome-section-report">
               {/* <div className="brgy-logo-container">
                 <img
                   src="/images/darasa-logo.png"

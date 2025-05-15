@@ -100,7 +100,7 @@
 /* Enhanced Analytics Dashboard Styles */
 .analytics-container {
   /* position: relative; */
-  padding: 2rem;
+  /* padding: 2rem; */
   background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
   min-height: 100vh;
 }
@@ -110,7 +110,7 @@
   margin: 0 auto;
 }
 
-.welcome-section {
+.welcome-section-report {
   text-align: center;
   margin-bottom: 3rem;
   animation: fadeIn 0.5s ease-out;
@@ -281,7 +281,6 @@
 
 .chart-container[data-chart="sectors"] {
   grid-column: span 1;
-  margin-top: 2rem; /* Add space above sectors chart */
 }
 
 .chart-title {
@@ -319,7 +318,7 @@
   background-color: rgba(255, 255, 255, 0.98);
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 1rem;
+  /* padding: 1rem; */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
