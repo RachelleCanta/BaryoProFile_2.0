@@ -43,7 +43,7 @@
 }
 
 .certificate-issued-container {
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -272,6 +272,10 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid #e2e8f0;
   height: fit-content; /* Allow container to fit content */
+}
+
+.age-spec {
+  margin-bottom:2rem;
 }
 
 /* Specific chart container adjustments */

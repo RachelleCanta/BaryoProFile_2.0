@@ -1049,7 +1049,7 @@ const AnalyticsDashboard = ({ onBack }) => {
                 </div> */}
 
                 {(graphFilter === "age" || graphFilter === "all") && (
-                  <div className="chart-container">
+                  <div className="chart-container age-spec">
                     <h3 className="chart-title">Population by Age Group</h3>
                     <div className="chart-content">
                       {ageData.length > 0 ? (
@@ -1133,9 +1133,10 @@ const AnalyticsDashboard = ({ onBack }) => {
                     </div>
                   </div>
                 )}
-
-                <div className="charts-grid">
-                  {/* <div className="chart-container">
+                
+                {(graphFilter === "sex" || graphFilter === "all") && (
+                  <div className="charts-grid">
+                    {/* <div className="chart-container">
                     <h3 className="chart-title">
                       Special Sectors Distribution
                     </h3>
@@ -1180,7 +1181,7 @@ const AnalyticsDashboard = ({ onBack }) => {
                     </div>
                   </div> */}
 
-                  {/* <div className="chart-container">
+                    {/* <div className="chart-container">
                     <h3 className="chart-title">Population By Sex</h3>
                     <div className="chart-content">
                       {sexGenderData.length > 0 ? (
@@ -1218,7 +1219,6 @@ const AnalyticsDashboard = ({ onBack }) => {
                       )}
                     </div>
                   </div> */}
-                  {(graphFilter === "sex" || graphFilter === "all") && (
                     <div className="chart-container">
                       <h3 className="chart-title">Population By Sex</h3>
                       <div className="chart-content">
@@ -1262,8 +1262,8 @@ const AnalyticsDashboard = ({ onBack }) => {
                         )}
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {(graphFilter === "cert-graph" || graphFilter === "all") && (
                   <div className="chart-container">

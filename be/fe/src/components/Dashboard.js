@@ -208,10 +208,11 @@ function Dashboard({ currentUser, onLogout }) {
       default:
         return (
           <div className="welcome-section">
-            <h1>
-              Welcome to BaryoProfile System               
-            </h1>
-            <strong>A Web-Based Profiling System with Data Analytics for Barangay Darasa</strong>
+            <h1>Welcome to BaryoProfile System</h1>
+            <strong>
+              A Web-Based Profiling System with Data Analytics for Barangay
+              Darasa
+            </strong>
             <br></br>
             <i>
               <strong>
@@ -238,7 +239,7 @@ function Dashboard({ currentUser, onLogout }) {
 
   return (
     <>
-      <AutoLogout />
+      <AutoLogout onLogout={onLogout} />
       <ScrollToTopButton />
       <div className="menu-container">
         <div className="dashboard-navbar">
